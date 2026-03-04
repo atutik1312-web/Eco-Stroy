@@ -8,6 +8,7 @@ export default function Admin() {
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
   const [activeTab, setActiveTab] = useState<'basic' | 'characteristics' | 'media' | 'config'>('basic');
   const [showToast, setShowToast] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
 
   const handleCreateNew = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -18,7 +19,7 @@ export default function Admin() {
       priceWarm: 0,
       priceTurnkey: 0,
       area: '100 м²',
-      floors: '1',
+      floors: '1 Этаж',
       bedrooms: '3',
       material: 'Кедр',
       time: '3-4 месяца',
@@ -57,9 +58,7 @@ export default function Admin() {
   };
 
   const handleDelete = (id: string) => {
-    if (window.confirm('Вы уверены, что хотите удалить этот проект?')) {
-      deleteProject(id);
-    }
+    setProjectToDelete(id);
   };
 
   const handleSave = () => {
@@ -166,6 +165,19 @@ export default function Admin() {
             </tbody>
           </table>
         </div>
+
+        {projectToDelete && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden p-6">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Удалить проект?</h3>
+              <p className="text-slate-500 dark:text-slate-400 mb-6">Это действие нельзя будет отменить.</p>
+              <div className="flex justify-end gap-3">
+                <button onClick={() => setProjectToDelete(null)} className="px-4 py-2 rounded-lg font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">Отмена</button>
+                <button onClick={() => { deleteProject(projectToDelete); setProjectToDelete(null); }} className="px-4 py-2 rounded-lg font-bold bg-red-500 hover:bg-red-600 text-white transition-colors">Удалить</button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
@@ -234,9 +246,8 @@ export default function Admin() {
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Этажность</label>
                 <select value={currentProject.floors} onChange={e => handleFloorsChange(e.target.value)} className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none">
-                  <option value="1">1 этаж</option>
-                  <option value="2">2 этажа</option>
-                  <option value="3">3 этажа</option>
+                  <option value="1 Этаж">1 этаж</option>
+                  <option value="2 Этажа">2 этажа</option>
                 </select>
               </div>
               <div className="flex flex-col gap-2">
