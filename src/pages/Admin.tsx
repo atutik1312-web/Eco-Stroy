@@ -1,0 +1,349 @@
+import React, { useState } from 'react';
+import { useProjects, DEFAULT_CONFIGS } from '../context/ProjectContext';
+import { Project } from '../types/project';
+
+export default function Admin() {
+  const { projects, addProject, updateProject, deleteProject } = useProjects();
+  const [view, setView] = useState<'list' | 'edit'>('list');
+  const [currentProject, setCurrentProject] = useState<Project | null>(null);
+  const [activeTab, setActiveTab] = useState<'basic' | 'characteristics' | 'media' | 'config'>('basic');
+  const [showToast, setShowToast] = useState(false);
+
+  const handleCreateNew = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const newProject: Project = {
+      id: `project-${Date.now()}`,
+      title: 'Новый проект',
+      price: 0,
+      priceWarm: 0,
+      priceTurnkey: 0,
+      area: '100 м²',
+      floors: '1',
+      bedrooms: '3',
+      material: 'Кедр',
+      time: '3-4 месяца',
+      series: 'Сканди',
+      image: '',
+      badge: null,
+      badgeColor: 'bg-primary',
+      isPopular: false,
+      description: '',
+      features: [],
+      gallery: Array(5).fill(''),
+      floorPlans: [''],
+      configurations: JSON.parse(JSON.stringify(DEFAULT_CONFIGS))
+    };
+    setCurrentProject(newProject);
+    setView('edit');
+    setActiveTab('basic');
+  };
+
+  const handleEdit = (project: Project) => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const projectCopy = JSON.parse(JSON.stringify(project));
+    if (!projectCopy.gallery) projectCopy.gallery = Array(5).fill('');
+    if (!projectCopy.floorPlans) projectCopy.floorPlans = Array(parseInt(projectCopy.floors) || 1).fill('');
+    if (!projectCopy.configurations) projectCopy.configurations = JSON.parse(JSON.stringify(DEFAULT_CONFIGS));
+    setCurrentProject(projectCopy);
+    setView('edit');
+    setActiveTab('basic');
+  };
+
+  const handleDuplicate = (project: Project) => {
+    const duplicate = JSON.parse(JSON.stringify(project));
+    duplicate.id = `project-${Date.now()}`;
+    duplicate.title = `${duplicate.title} (Копия)`;
+    addProject(duplicate);
+  };
+
+  const handleDelete = (id: string) => {
+    if (window.confirm('Вы уверены, что хотите удалить этот проект?')) {
+      deleteProject(id);
+    }
+  };
+
+  const handleSave = () => {
+    if (currentProject) {
+      const exists = projects.some(p => p.id === currentProject.id);
+      if (exists) {
+        updateProject(currentProject.id, currentProject);
+      } else {
+        addProject(currentProject);
+      }
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+      setView('list');
+    }
+  };
+
+  const updateField = (field: keyof Project, value: any) => {
+    if (currentProject) {
+      setCurrentProject({ ...currentProject, [field]: value });
+    }
+  };
+
+  const updateConfigRow = (sectionIndex: number, rowIndex: number, field: 'v1' | 'v2', value: boolean) => {
+    if (!currentProject || !currentProject.configurations) return;
+    const newConfigs = [...currentProject.configurations];
+    newConfigs[sectionIndex].rows[rowIndex][field] = value;
+    setCurrentProject({ ...currentProject, configurations: newConfigs });
+  };
+
+  const updateGallery = (index: number, value: string) => {
+    if (!currentProject) return;
+    const newGallery = [...(currentProject.gallery || Array(5).fill(''))];
+    newGallery[index] = value;
+    setCurrentProject({ ...currentProject, gallery: newGallery, image: newGallery[0] || currentProject.image });
+  };
+
+  const updateFloorPlan = (index: number, value: string) => {
+    if (!currentProject) return;
+    const newPlans = [...(currentProject.floorPlans || [])];
+    newPlans[index] = value;
+    setCurrentProject({ ...currentProject, floorPlans: newPlans });
+  };
+
+  const handleFloorsChange = (value: string) => {
+    if (!currentProject) return;
+    const numFloors = parseInt(value) || 1;
+    const currentPlans = currentProject.floorPlans || [];
+    const newPlans = Array(numFloors).fill('').map((_, i) => currentPlans[i] || '');
+    setCurrentProject({ ...currentProject, floors: value, floorPlans: newPlans });
+  };
+
+  if (view === 'list') {
+    return (
+      <div className="p-4 md:p-10 max-w-7xl mx-auto min-h-screen">
+        <div className="flex justify-between items-center mb-8">
+          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Управление проектами</h1>
+          <button onClick={handleCreateNew} className="px-6 py-3 bg-primary hover:bg-green-500 transition-colors text-slate-900 font-bold rounded-lg flex items-center gap-2 shadow-lg shadow-primary/20">
+            <span className="material-symbols-outlined">add</span>
+            Добавить проект
+          </button>
+        </div>
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden overflow-x-auto">
+          <table className="w-full text-left min-w-[800px]">
+            <thead>
+              <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+                <th className="p-4 w-12 text-slate-500 font-medium">#</th>
+                <th className="p-4 w-24 text-slate-500 font-medium">Фото</th>
+                <th className="p-4 text-slate-500 font-medium">Название</th>
+                <th className="p-4 text-slate-500 font-medium">Серия</th>
+                <th className="p-4 text-slate-500 font-medium">Цена</th>
+                <th className="p-4 text-right text-slate-500 font-medium">Действия</th>
+              </tr>
+            </thead>
+            <tbody>
+              {projects.map((project, index) => (
+                <tr key={project.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                  <td className="p-4 text-slate-500">{index + 1}</td>
+                  <td className="p-4">
+                    <div className="w-16 h-12 rounded bg-slate-100 dark:bg-slate-800 bg-cover bg-center border border-slate-200 dark:border-slate-700 flex items-center justify-center" style={project.image ? { backgroundImage: `url(${project.image})` } : {}}>
+                      {!project.image && <span className="material-symbols-outlined text-slate-400 text-sm">image</span>}
+                    </div>
+                  </td>
+                  <td className="p-4 font-medium text-slate-900 dark:text-white">
+                    {project.title}
+                    {project.isPopular && <span className="ml-2 px-2 py-0.5 bg-orange-100 text-orange-600 text-xs rounded-full">Популярный</span>}
+                  </td>
+                  <td className="p-4 text-slate-600 dark:text-slate-400">{project.series}</td>
+                  <td className="p-4 font-medium text-slate-900 dark:text-white">{new Intl.NumberFormat('ru-RU').format(project.price)} ₽</td>
+                  <td className="p-4 text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <button onClick={() => handleEdit(project)} className="p-2 text-slate-400 hover:text-primary transition-colors" title="Редактировать">
+                        <span className="material-symbols-outlined">edit</span>
+                      </button>
+                      <button onClick={() => handleDuplicate(project)} className="p-2 text-slate-400 hover:text-blue-500 transition-colors" title="Дублировать">
+                        <span className="material-symbols-outlined">content_copy</span>
+                      </button>
+                      <button onClick={() => handleDelete(project.id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors" title="Удалить">
+                        <span className="material-symbols-outlined">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentProject) return null;
+
+  return (
+    <div className="p-4 md:p-10 max-w-5xl mx-auto min-h-screen">
+      <div className="flex justify-between items-center mb-8">
+        <button onClick={() => setView('list')} className="flex items-center gap-2 p-2 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">
+          <span className="material-symbols-outlined">arrow_back</span>
+          Назад к списку
+        </button>
+        <button onClick={handleSave} className="px-8 py-3 bg-primary hover:bg-green-500 transition-colors text-slate-900 font-bold rounded-lg shadow-lg shadow-primary/20">
+          Сохранить проект
+        </button>
+      </div>
+
+      <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <div className="flex overflow-x-auto border-b border-slate-200 dark:border-slate-800 hide-scrollbar">
+          <button onClick={() => setActiveTab('basic')} className={`px-6 py-4 font-medium whitespace-nowrap transition-colors ${activeTab === 'basic' ? 'border-b-2 border-primary text-primary' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}>Основная информация</button>
+          <button onClick={() => setActiveTab('characteristics')} className={`px-6 py-4 font-medium whitespace-nowrap transition-colors ${activeTab === 'characteristics' ? 'border-b-2 border-primary text-primary' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}>Характеристики</button>
+          <button onClick={() => setActiveTab('media')} className={`px-6 py-4 font-medium whitespace-nowrap transition-colors ${activeTab === 'media' ? 'border-b-2 border-primary text-primary' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}>Медиа (Фото)</button>
+          <button onClick={() => setActiveTab('config')} className={`px-6 py-4 font-medium whitespace-nowrap transition-colors ${activeTab === 'config' ? 'border-b-2 border-primary text-primary' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}>Комплектации</button>
+        </div>
+
+        <div className="p-6 md:p-8">
+          {activeTab === 'basic' && (
+            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Название проекта</label>
+                <input type="text" value={currentProject.title} onChange={e => updateField('title', e.target.value)} className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none" placeholder="Например: Дом Сканди 100" />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Серия</label>
+                  <select value={currentProject.series} onChange={e => updateField('series', e.target.value)} className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none">
+                    <option value="Сканди">Сканди</option>
+                    <option value="Модерн">Модерн</option>
+                    <option value="Барнхаус">Барнхаус</option>
+                    <option value="Классика">Классика</option>
+                  </select>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Базовая цена (₽)</label>
+                  <input type="number" value={currentProject.price} onChange={e => updateField('price', parseInt(e.target.value) || 0)} className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none" placeholder="Например: 2500000" />
+                </div>
+              </div>
+              <div className="flex items-center gap-3 mt-2">
+                <input type="checkbox" id="isPopular" checked={currentProject.isPopular} onChange={e => updateField('isPopular', e.target.checked)} className="size-5 rounded border-slate-300 text-primary focus:ring-primary" />
+                <label htmlFor="isPopular" className="font-medium text-slate-700 dark:text-slate-300 cursor-pointer">Показывать в блоке "Популярные проекты"</label>
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Описание проекта</label>
+                <textarea value={currentProject.description} onChange={e => updateField('description', e.target.value)} className="h-32 p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none resize-none" placeholder="Подробное описание дома..."></textarea>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'characteristics' && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Площадь</label>
+                <input type="text" value={currentProject.area} onChange={e => updateField('area', e.target.value)} className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none" placeholder="Например: 120 м²" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Этажность</label>
+                <select value={currentProject.floors} onChange={e => handleFloorsChange(e.target.value)} className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none">
+                  <option value="1">1 этаж</option>
+                  <option value="2">2 этажа</option>
+                  <option value="3">3 этажа</option>
+                </select>
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Количество спален</label>
+                <input type="text" value={currentProject.bedrooms} onChange={e => updateField('bedrooms', e.target.value)} className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none" placeholder="Например: 3" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Срок стройки</label>
+                <input type="text" value={currentProject.time} onChange={e => updateField('time', e.target.value)} className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none" placeholder="Например: 3-4 месяца" />
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'media' && (
+            <div className="flex flex-col gap-8">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Галерея проекта (5 фото)</h3>
+                <p className="text-sm text-slate-500 mb-4">Вставьте ссылки на изображения. Первое изображение будет обложкой проекта.</p>
+                <div className="flex flex-col gap-4">
+                  {(currentProject.gallery || Array(5).fill('')).map((url, index) => (
+                    <div key={index} className="flex gap-4 items-start">
+                      <div className="w-24 h-16 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-shrink-0 bg-cover bg-center flex items-center justify-center overflow-hidden" style={url ? { backgroundImage: `url(${url})` } : {}}>
+                        {!url && <span className="material-symbols-outlined text-slate-400">image</span>}
+                      </div>
+                      <div className="flex-1 flex flex-col gap-1">
+                        <label className="text-xs font-medium text-slate-500">Фото {index + 1} {index === 0 && '(Обложка)'}</label>
+                        <input type="text" value={url} onChange={e => updateGallery(index, e.target.value)} className="h-10 px-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none" placeholder="https://..." />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="border-t border-slate-200 dark:border-slate-800 pt-8">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Планировки ({currentProject.floors} этаж(а))</h3>
+                <div className="flex flex-col gap-4">
+                  {(currentProject.floorPlans || []).map((url, index) => (
+                    <div key={index} className="flex gap-4 items-start">
+                      <div className="w-24 h-16 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-shrink-0 bg-cover bg-center flex items-center justify-center overflow-hidden" style={url ? { backgroundImage: `url(${url})` } : {}}>
+                        {!url && <span className="material-symbols-outlined text-slate-400">architecture</span>}
+                      </div>
+                      <div className="flex-1 flex flex-col gap-1">
+                        <label className="text-xs font-medium text-slate-500">План {index + 1}-го этажа</label>
+                        <input type="text" value={url} onChange={e => updateFloorPlan(index, e.target.value)} className="h-10 px-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none" placeholder="https://..." />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'config' && (
+            <div className="flex flex-col gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-200 dark:border-slate-700">
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-bold text-slate-900 dark:text-white">Цена "Теплый контур" (₽)</label>
+                  <input type="number" value={currentProject.priceWarm || currentProject.price} onChange={e => updateField('priceWarm', parseInt(e.target.value) || 0)} className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none" />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-bold text-slate-900 dark:text-white">Цена "Под ключ" (₽)</label>
+                  <input type="number" value={currentProject.priceTurnkey || Math.round(currentProject.price * 1.3)} onChange={e => updateField('priceTurnkey', parseInt(e.target.value) || 0)} className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none" />
+                </div>
+              </div>
+
+              <div className="overflow-x-auto border border-slate-200 dark:border-slate-700 rounded-xl">
+                <table className="w-full text-left min-w-[600px]">
+                  <thead>
+                    <tr className="bg-slate-100 dark:bg-slate-800">
+                      <th className="p-4 font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700">Параметр</th>
+                      <th className="p-4 font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 text-center w-32">Теплый контур</th>
+                      <th className="p-4 font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 text-center w-32">Под ключ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(currentProject.configurations || []).map((section, sIdx) => (
+                      <React.Fragment key={sIdx}>
+                        <tr className="bg-slate-50 dark:bg-slate-900/50">
+                          <td colSpan={3} className="p-3 font-bold text-primary border-b border-slate-200 dark:border-slate-700">{section.title}</td>
+                        </tr>
+                        {section.rows.map((row, rIdx) => (
+                          <tr key={rIdx} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/30">
+                            <td className="p-3 text-sm text-slate-700 dark:text-slate-300">{row.name}</td>
+                            <td className="p-3 text-center">
+                              <input type="checkbox" checked={row.v1} onChange={e => updateConfigRow(sIdx, rIdx, 'v1', e.target.checked)} className="size-5 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer" />
+                            </td>
+                            <td className="p-3 text-center">
+                              <input type="checkbox" checked={row.v2} onChange={e => updateConfigRow(sIdx, rIdx, 'v2', e.target.checked)} className="size-5 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer" />
+                            </td>
+                          </tr>
+                        ))}
+                      </React.Fragment>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {showToast && (
+        <div className="fixed bottom-8 right-8 bg-slate-900 text-white px-6 py-4 rounded-xl flex items-center gap-3 z-[100] shadow-2xl animate-fade-in-up">
+          <span className="material-symbols-outlined text-green-400">check_circle</span>
+          <span className="font-bold">Проект успешно сохранен!</span>
+        </div>
+      )}
+    </div>
+  );
+}
