@@ -7,8 +7,13 @@ export default function Admin() {
   const [view, setView] = useState<'list' | 'edit'>('list');
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
   const [activeTab, setActiveTab] = useState<'basic' | 'characteristics' | 'media' | 'config'>('basic');
-  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
+
+  const showNotification = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
 
   const handleCreateNew = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -69,9 +74,7 @@ export default function Admin() {
       } else {
         addProject(currentProject);
       }
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3000);
-      setView('list');
+      showNotification('Проект успешно сохранен!');
     }
   };
 
@@ -173,9 +176,20 @@ export default function Admin() {
               <p className="text-slate-500 dark:text-slate-400 mb-6">Это действие нельзя будет отменить.</p>
               <div className="flex justify-end gap-3">
                 <button onClick={() => setProjectToDelete(null)} className="px-4 py-2 rounded-lg font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">Отмена</button>
-                <button onClick={() => { deleteProject(projectToDelete); setProjectToDelete(null); }} className="px-4 py-2 rounded-lg font-bold bg-red-500 hover:bg-red-600 text-white transition-colors">Удалить</button>
+                <button onClick={() => { 
+                  deleteProject(projectToDelete); 
+                  setProjectToDelete(null); 
+                  showNotification('Проект успешно удален!');
+                }} className="px-4 py-2 rounded-lg font-bold bg-red-500 hover:bg-red-600 text-white transition-colors">Удалить</button>
               </div>
             </div>
+          </div>
+        )}
+
+        {toastMessage && (
+          <div className="fixed bottom-8 right-8 bg-slate-900 text-white px-6 py-4 rounded-xl flex items-center gap-3 z-[100] shadow-2xl animate-fade-in-up">
+            <span className="material-symbols-outlined text-green-400">check_circle</span>
+            <span className="font-bold">{toastMessage}</span>
           </div>
         )}
       </div>
@@ -349,10 +363,10 @@ export default function Admin() {
         </div>
       </div>
 
-      {showToast && (
+      {toastMessage && (
         <div className="fixed bottom-8 right-8 bg-slate-900 text-white px-6 py-4 rounded-xl flex items-center gap-3 z-[100] shadow-2xl animate-fade-in-up">
           <span className="material-symbols-outlined text-green-400">check_circle</span>
-          <span className="font-bold">Проект успешно сохранен!</span>
+          <span className="font-bold">{toastMessage}</span>
         </div>
       )}
     </div>
