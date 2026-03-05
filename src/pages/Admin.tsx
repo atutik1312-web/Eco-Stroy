@@ -7,12 +7,12 @@ export default function Admin() {
   const [view, setView] = useState<'list' | 'edit'>('list');
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
   const [activeTab, setActiveTab] = useState<'basic' | 'characteristics' | 'media' | 'config'>('basic');
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toast, setToast] = useState<{msg: string, type: 'success' | 'error'} | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
 
-  const showNotification = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
+  const showNotification = (msg: string, type: 'success' | 'error' = 'success') => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 3000);
   };
 
   const handleCreateNew = () => {
@@ -68,6 +68,12 @@ export default function Admin() {
 
   const handleSave = () => {
     if (currentProject) {
+      if (!currentProject.image && (!currentProject.gallery || !currentProject.gallery[0])) {
+        showNotification('Укажите ссылку на обложку проекта (Фото 1)', 'error');
+        setActiveTab('media');
+        return;
+      }
+
       const exists = projects.some(p => p.id === currentProject.id);
       if (exists) {
         updateProject(currentProject.id, currentProject);
@@ -186,10 +192,12 @@ export default function Admin() {
           </div>
         )}
 
-        {toastMessage && (
-          <div className="fixed bottom-8 right-8 bg-slate-900 text-white px-6 py-4 rounded-xl flex items-center gap-3 z-[100] shadow-2xl animate-fade-in-up">
-            <span className="material-symbols-outlined text-green-400">check_circle</span>
-            <span className="font-bold">{toastMessage}</span>
+        {toast && (
+          <div className={`fixed bottom-8 right-8 text-white px-6 py-4 rounded-xl flex items-center gap-3 z-[100] shadow-2xl animate-fade-in-up ${toast.type === 'error' ? 'bg-red-600' : 'bg-slate-900'}`}>
+            <span className={`material-symbols-outlined ${toast.type === 'error' ? 'text-white' : 'text-green-400'}`}>
+              {toast.type === 'error' ? 'error' : 'check_circle'}
+            </span>
+            <span className="font-bold">{toast.msg}</span>
           </div>
         )}
       </div>
@@ -363,10 +371,12 @@ export default function Admin() {
         </div>
       </div>
 
-      {toastMessage && (
-        <div className="fixed bottom-8 right-8 bg-slate-900 text-white px-6 py-4 rounded-xl flex items-center gap-3 z-[100] shadow-2xl animate-fade-in-up">
-          <span className="material-symbols-outlined text-green-400">check_circle</span>
-          <span className="font-bold">{toastMessage}</span>
+      {toast && (
+        <div className={`fixed bottom-8 right-8 text-white px-6 py-4 rounded-xl flex items-center gap-3 z-[100] shadow-2xl animate-fade-in-up ${toast.type === 'error' ? 'bg-red-600' : 'bg-slate-900'}`}>
+          <span className={`material-symbols-outlined ${toast.type === 'error' ? 'text-white' : 'text-green-400'}`}>
+            {toast.type === 'error' ? 'error' : 'check_circle'}
+          </span>
+          <span className="font-bold">{toast.msg}</span>
         </div>
       )}
     </div>

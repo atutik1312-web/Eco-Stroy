@@ -29,13 +29,12 @@ export default function ProjectDetails() {
   const configurations = project.configurations || [];
 
   // All images for the gallery
-  const allImages = [
-    project.image,
-    ...[1, 2, 3, 4].map(i => `https://picsum.photos/seed/${project.id}${i}/1200/900`)
-  ];
+  const allImages = (project.gallery && project.gallery.some(img => img))
+    ? project.gallery.filter(Boolean)
+    : [project.image].filter(Boolean);
 
   const numFloors = parseInt(project.floors) || 1;
-  const floorPlans = Array.from({ length: numFloors }).map((_, i) => `https://picsum.photos/seed/floorplan${project.id}${i}/1200/900`);
+  const floorPlans = (project.floorPlans || []).filter(Boolean);
 
   const openGallery = (images: string[], index: number) => {
     setGalleryImages(images);
@@ -98,18 +97,20 @@ export default function ProjectDetails() {
                 <span className="material-symbols-outlined text-white opacity-0 group-hover:opacity-100 transition-opacity text-5xl drop-shadow-lg">zoom_in</span>
               </div>
             </div>
-            <div className="grid grid-cols-4 gap-4">
-              {[1, 2, 3, 4].map((i, index) => (
-                <div 
-                  key={i} 
-                  className="aspect-[4/3] rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-primary transition-all group relative"
-                  onClick={() => openGallery(allImages, index + 1)}
-                >
-                  <div className="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style={{ backgroundImage: `url('https://picsum.photos/seed/${project.id}${i}/400/300')` }}></div>
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
-                </div>
-              ))}
-            </div>
+            {allImages.length > 1 && (
+              <div className="grid grid-cols-4 gap-4">
+                {allImages.slice(1, 5).map((img, index) => (
+                  <div 
+                    key={index} 
+                    className="aspect-[4/3] rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-primary transition-all group relative"
+                    onClick={() => openGallery(allImages, index + 1)}
+                  >
+                    <div className="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-110" style={{ backgroundImage: `url('${img}')` }}></div>
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors"></div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col gap-8">
@@ -171,27 +172,29 @@ export default function ProjectDetails() {
         </div>
 
         {/* Floor Plans */}
-        <div className="mt-10">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-8">Планировка</h2>
-          <div className={`grid grid-cols-1 ${numFloors > 1 ? 'md:grid-cols-2' : ''} gap-8`}>
-            {floorPlans.map((plan, index) => (
-              <div key={index} className="flex flex-col gap-4">
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white text-center">
-                  {index === 0 ? '1-й этаж' : '2-й этаж'}
-                </h3>
-                <div 
-                  className="aspect-[4/3] w-full rounded-2xl overflow-hidden relative cursor-pointer group border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4"
-                  onClick={() => openGallery(floorPlans, index)}
-                >
-                  <div className="w-full h-full bg-contain bg-no-repeat bg-center transition-transform duration-500 group-hover:scale-105" style={{ backgroundImage: `url('${plan}')` }}></div>
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                    <span className="material-symbols-outlined text-slate-900 dark:text-white opacity-0 group-hover:opacity-100 transition-opacity text-5xl drop-shadow-lg">zoom_in</span>
+        {floorPlans.length > 0 && (
+          <div className="mt-10">
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-8">Планировка</h2>
+            <div className={`grid grid-cols-1 ${floorPlans.length > 1 ? 'md:grid-cols-2' : ''} gap-8`}>
+              {floorPlans.map((plan, index) => (
+                <div key={index} className="flex flex-col gap-4">
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white text-center">
+                    {index === 0 ? '1-й этаж' : '2-й этаж'}
+                  </h3>
+                  <div 
+                    className="aspect-[4/3] w-full rounded-2xl overflow-hidden relative cursor-pointer group border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4"
+                    onClick={() => openGallery(floorPlans, index)}
+                  >
+                    <div className="w-full h-full bg-contain bg-no-repeat bg-center transition-transform duration-500 group-hover:scale-105" style={{ backgroundImage: `url('${plan}')` }}></div>
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                      <span className="material-symbols-outlined text-slate-900 dark:text-white opacity-0 group-hover:opacity-100 transition-opacity text-5xl drop-shadow-lg">zoom_in</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Configurations Table */}
         <div className="mt-16">
