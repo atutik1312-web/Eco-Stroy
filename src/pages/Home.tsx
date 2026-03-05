@@ -1,19 +1,24 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { POPULAR_PROJECTS } from '../data/projects';
+import { useProjects } from '../context/ProjectContext';
 
 export default function Home() {
+  const { projects } = useProjects();
+  const popularProjects = projects.filter(p => p.isPopular);
+  
   const [currentSlide, setCurrentSlide] = useState(0);
   const [phone, setPhone] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % (POPULAR_PROJECTS.length - 2));
+    if (popularProjects.length <= 3) return;
+    setCurrentSlide((prev) => (prev + 1) % (popularProjects.length - 2));
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev === 0 ? POPULAR_PROJECTS.length - 3 : prev - 1));
+    if (popularProjects.length <= 3) return;
+    setCurrentSlide((prev) => (prev === 0 ? popularProjects.length - 3 : prev - 1));
   };
 
   const handlePhoneSubmit = (e: React.FormEvent) => {
@@ -155,7 +160,7 @@ export default function Home() {
               className="flex gap-6 transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(calc(-${currentSlide * (100 / 3)}% - ${currentSlide * 16}px))` }}
             >
-              {POPULAR_PROJECTS.map((project) => (
+              {popularProjects.map((project) => (
                 <div key={project.id} className="group min-w-[calc(100%-2rem)] md:min-w-[calc(33.333%-1rem)] bg-white dark:bg-[#152e15] rounded-xl overflow-hidden border border-slate-100 dark:border-slate-800 hover:shadow-lg transition-shadow">
                   <Link to={`/catalog/${project.id}`} onClick={() => window.scrollTo(0, 0)} className="block aspect-[4/3] relative overflow-hidden">
                     <div className="w-full h-full bg-cover bg-center transform group-hover:scale-105 transition-transform duration-500" style={{ backgroundImage: `url('${project.image}')` }}></div>
@@ -169,7 +174,7 @@ export default function Home() {
                       <div className="flex items-center gap-1.5"><span className="material-symbols-outlined text-lg">square_foot</span> {project.area}</div>
                       <div className="flex items-center gap-1.5"><span className="material-symbols-outlined text-lg">layers</span> {project.floors}</div>
                       <div className="flex items-center gap-1.5"><span className="material-symbols-outlined text-lg">bed</span> {project.bedrooms}</div>
-                      <div className="flex items-center gap-1.5"><span className="material-symbols-outlined text-lg">forest</span> {project.material}</div>
+                      <div className="flex items-center gap-1.5"><span className="material-symbols-outlined text-lg">calendar_month</span> {project.time}</div>
                     </div>
                     <Link to={`/catalog/${project.id}`} onClick={() => window.scrollTo(0, 0)} className="w-full py-2.5 rounded border border-primary text-primary hover:bg-primary hover:text-slate-900 font-medium transition-colors flex justify-center">
                       Подробнее
