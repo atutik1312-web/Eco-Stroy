@@ -4,7 +4,7 @@ import { useProjects } from '../context/ProjectContext';
 
 export default function ProjectDetails() {
   const { id } = useParams();
-  const { projects } = useProjects();
+  const { projects, loading } = useProjects();
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
@@ -71,6 +71,14 @@ export default function ProjectDetails() {
       }, 3000);
     }, 1500);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="size-12 rounded-full border-4 border-slate-200 border-t-primary animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <main className="flex-1 flex flex-col items-center py-8 px-4 md:px-10 lg:px-20">

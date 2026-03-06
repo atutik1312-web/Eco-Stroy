@@ -1,9 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, getDocs, writeBatch } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import { Project, ConfigSection } from '../types/project';
 import { MOCK_PROJECTS } from '../data/projects';
 
 interface ProjectContextType {
   projects: Project[];
+  loading: boolean;
   addProject: (project: Project) => void;
   updateProject: (id: string, project: Project) => void;
   deleteProject: (id: string) => void;
@@ -120,47 +123,91 @@ export const DEFAULT_CONFIGS: ConfigSection[] = [
 ];
 
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [projects, setProjects] = useState<Project[]>(() => {
-    const saved = localStorage.getItem('ecostroy_projects_v2');
-    if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch (e) {
-        console.error('Failed to parse projects from local storage');
-      }
-    }
-    // Map existing mock projects to include default configs and gallery if missing
-    return MOCK_PROJECTS.map(p => ({
-      ...p,
-      priceWarm: p.price,
-      priceTurnkey: Math.round(p.price * 1.3),
-      gallery: [
-        p.image,
-        ...[1, 2, 3, 4].map(i => `https://picsum.photos/seed/${p.id}${i}/1200/900`)
-      ],
-      floorPlans: Array.from({ length: parseInt(p.floors) || 1 }).map((_, i) => `https://picsum.photos/seed/floorplan${p.id}${i}/1200/900`),
-      configurations: DEFAULT_CONFIGS
-    })) as Project[];
-  });
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    localStorage.setItem('ecostroy_projects_v2', JSON.stringify(projects));
-  }, [projects]);
+    const projectsCol = collection(db, 'projects');
+    let unsubscribe: () => void;
 
-  const addProject = (project: Project) => {
-    setProjects(prev => [project, ...prev]);
+    const initFirebase = async () => {
+      try {
+        // Check if collection is empty
+        const snapshot = await getDocs(projectsCol);
+        if (snapshot.empty) {
+          console.log('Firestore is empty. Populating with mock data...');
+          const batch = writeBatch(db);
+          
+          const initialProjects = MOCK_PROJECTS.map(p => ({
+            ...p,
+            priceWarm: p.price,
+            priceTurnkey: Math.round(p.price * 1.3),
+            gallery: [
+              p.image,
+              ...[1, 2, 3, 4].map(i => `https://picsum.photos/seed/${p.id}${i}/1200/900`)
+            ],
+            floorPlans: Array.from({ length: parseInt(p.floors) || 1 }).map((_, i) => `https://picsum.photos/seed/floorplan${p.id}${i}/1200/900`),
+            configurations: DEFAULT_CONFIGS
+          })) as Project[];
+
+          initialProjects.forEach(project => {
+            const docRef = doc(projectsCol, project.id);
+            batch.set(docRef, project);
+          });
+
+          await batch.commit();
+          console.log('Mock data populated successfully!');
+        }
+      } catch (error) {
+        console.error("Error populating Firestore:", error);
+      } finally {
+        // Subscribe to real-time updates
+        unsubscribe = onSnapshot(projectsCol, (snapshot) => {
+          const projectsData = snapshot.docs.map(doc => doc.data() as Project);
+          // Sort projects by creation time or just reverse to show newest first
+          // Since we don't have a createdAt field, we'll just reverse them for now
+          setProjects(projectsData.reverse());
+          setLoading(false);
+        }, (error) => {
+          console.error("Error fetching projects:", error);
+          setLoading(false);
+        });
+      }
+    };
+
+    initFirebase();
+
+    return () => {
+      if (unsubscribe) unsubscribe();
+    };
+  }, []);
+
+  const addProject = async (project: Project) => {
+    try {
+      await setDoc(doc(db, 'projects', project.id), project);
+    } catch (error) {
+      console.error("Error adding project:", error);
+    }
   };
 
-  const updateProject = (id: string, updated: Project) => {
-    setProjects(prev => prev.map(p => p.id === id ? updated : p));
+  const updateProject = async (id: string, updated: Project) => {
+    try {
+      await updateDoc(doc(db, 'projects', id), updated as any);
+    } catch (error) {
+      console.error("Error updating project:", error);
+    }
   };
 
-  const deleteProject = (id: string) => {
-    setProjects(prev => prev.filter(p => p.id !== id));
+  const deleteProject = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, 'projects', id));
+    } catch (error) {
+      console.error("Error deleting project:", error);
+    }
   };
 
   return (
-    <ProjectContext.Provider value={{ projects, addProject, updateProject, deleteProject }}>
+    <ProjectContext.Provider value={{ projects, loading, addProject, updateProject, deleteProject }}>
       {children}
     </ProjectContext.Provider>
   );

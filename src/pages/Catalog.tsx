@@ -5,7 +5,7 @@ import { useProjects } from '../context/ProjectContext';
 type FilterOption = 'popular' | 'price_asc' | 'price_desc';
 
 export default function Catalog() {
-  const { projects } = useProjects();
+  const { projects, loading } = useProjects();
   const [filter, setFilter] = useState<FilterOption>('price_asc');
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 12;
@@ -42,6 +42,14 @@ export default function Catalog() {
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('ru-RU').format(price) + ' ₽';
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="size-12 rounded-full border-4 border-slate-200 border-t-primary animate-spin"></div>
+      </div>
+    );
+  }
 
   return (
     <main className="flex-1 flex flex-col items-center py-8 px-4 md:px-10 lg:px-20">

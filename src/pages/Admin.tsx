@@ -3,7 +3,7 @@ import { useProjects, DEFAULT_CONFIGS } from '../context/ProjectContext';
 import { Project } from '../types/project';
 
 export default function Admin() {
-  const { projects, addProject, updateProject, deleteProject } = useProjects();
+  const { projects, loading, addProject, updateProject, deleteProject } = useProjects();
   const [view, setView] = useState<'list' | 'edit'>('list');
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
   const [activeTab, setActiveTab] = useState<'basic' | 'characteristics' | 'media' | 'config'>('basic');
@@ -119,6 +119,14 @@ export default function Admin() {
     const newPlans = Array(numFloors).fill('').map((_, i) => currentPlans[i] || '');
     setCurrentProject({ ...currentProject, floors: value, floorPlans: newPlans });
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="size-12 rounded-full border-4 border-slate-200 border-t-primary animate-spin"></div>
+      </div>
+    );
+  }
 
   if (view === 'list') {
     return (
