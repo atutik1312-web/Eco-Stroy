@@ -59,6 +59,7 @@ export default function Admin() {
     const duplicate = JSON.parse(JSON.stringify(project));
     duplicate.id = `project-${Date.now()}`;
     duplicate.title = `${duplicate.title} (Копия)`;
+    duplicate.isPopular = false;
     addProject(duplicate);
   };
 
@@ -248,9 +249,26 @@ export default function Admin() {
                   <input type="number" value={currentProject.price} onChange={e => updateField('price', parseInt(e.target.value) || 0)} className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none" placeholder="Например: 2500000" />
                 </div>
               </div>
-              <div className="flex items-center gap-3 mt-2">
-                <input type="checkbox" id="isPopular" checked={currentProject.isPopular} onChange={e => updateField('isPopular', e.target.checked)} className="size-5 rounded border-slate-300 text-primary focus:ring-primary" />
-                <label htmlFor="isPopular" className="font-medium text-slate-700 dark:text-slate-300 cursor-pointer">Показывать в блоке "Популярные проекты"</label>
+              <div className="flex flex-col gap-1 mt-2">
+                <div className="flex items-center gap-3">
+                  <input 
+                    type="checkbox" 
+                    id="isPopular" 
+                    checked={currentProject.isPopular} 
+                    onChange={e => updateField('isPopular', e.target.checked)} 
+                    disabled={!currentProject.isPopular && projects.filter(p => p.isPopular).length >= 7}
+                    className="size-5 rounded border-slate-300 text-primary focus:ring-primary disabled:opacity-50 disabled:cursor-not-allowed" 
+                  />
+                  <label 
+                    htmlFor="isPopular" 
+                    className={`font-medium ${(!currentProject.isPopular && projects.filter(p => p.isPopular).length >= 7) ? 'text-slate-400 cursor-not-allowed' : 'text-slate-700 dark:text-slate-300 cursor-pointer'}`}
+                  >
+                    Показывать в блоке "Популярные проекты"
+                  </label>
+                </div>
+                {(!currentProject.isPopular && projects.filter(p => p.isPopular).length >= 7) && (
+                  <p className="text-xs text-red-500 ml-8">Достигнут лимит: максимум 7 популярных проектов.</p>
+                )}
               </div>
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Описание проекта</label>

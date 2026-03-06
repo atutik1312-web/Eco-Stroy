@@ -121,7 +121,7 @@ export const DEFAULT_CONFIGS: ConfigSection[] = [
 
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [projects, setProjects] = useState<Project[]>(() => {
-    const saved = localStorage.getItem('ecostroy_projects');
+    const saved = localStorage.getItem('ecostroy_projects_v2');
     if (saved) {
       try {
         return JSON.parse(saved);
@@ -144,7 +144,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
   });
 
   useEffect(() => {
-    localStorage.setItem('ecostroy_projects', JSON.stringify(projects));
+    localStorage.setItem('ecostroy_projects_v2', JSON.stringify(projects));
   }, [projects]);
 
   const addProject = (project: Project) => {
