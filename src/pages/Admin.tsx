@@ -1,10 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { collection, query, orderBy, onSnapshot, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import { useProjects, DEFAULT_CONFIGS } from '../context/ProjectContext';
 import { Project } from '../types/project';
+import { Order } from '../types/order';
 
 export default function Admin() {
   const { projects, loading, addProject, updateProject, deleteProject } = useProjects();
   const [view, setView] = useState<'list' | 'edit'>('list');
+  const [adminTab, setAdminTab] = useState<'projects' | 'orders'>('projects');
+  const [orders, setOrders] = useState<Order[]>([]);
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
   const [activeTab, setActiveTab] = useState<'basic' | 'characteristics' | 'media' | 'config'>('basic');
   const [toast, setToast] = useState<{msg: string, type: 'success' | 'error'} | null>(null);
@@ -120,6 +125,37 @@ export default function Admin() {
     setCurrentProject({ ...currentProject, floors: value, floorPlans: newPlans });
   };
 
+  useEffect(() => {
+    if (adminTab === 'orders') {
+      const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
+      const unsubscribe = onSnapshot(q, (snapshot) => {
+        const ordersData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Order));
+        setOrders(ordersData);
+      });
+      return () => unsubscribe();
+    }
+  }, [adminTab]);
+
+  const updateOrderStatus = async (id: string, newStatus: Order['status']) => {
+    try {
+      await updateDoc(doc(db, 'orders', id), { status: newStatus });
+      showNotification('Статус заявки обновлен');
+    } catch (error) {
+      showNotification('Ошибка при обновлении статуса', 'error');
+    }
+  };
+
+  const handleDeleteOrder = async (id: string) => {
+    if (window.confirm('Вы уверены, что хотите удалить эту заявку?')) {
+      try {
+        await deleteDoc(doc(db, 'orders', id));
+        showNotification('Заявка удалена');
+      } catch (error) {
+        showNotification('Ошибка при удалении', 'error');
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -131,58 +167,145 @@ export default function Admin() {
   if (view === 'list') {
     return (
       <div className="p-4 md:p-10 max-w-7xl mx-auto min-h-screen">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Управление проектами</h1>
-          <button onClick={handleCreateNew} className="px-6 py-3 bg-primary hover:bg-green-500 transition-colors text-slate-900 font-bold rounded-lg flex items-center gap-2 shadow-lg shadow-primary/20">
-            <span className="material-symbols-outlined">add</span>
-            Добавить проект
-          </button>
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Панель управления</h1>
+            <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800">
+              <button 
+                onClick={() => setAdminTab('projects')}
+                className={`pb-2 text-sm font-medium transition-colors relative ${adminTab === 'projects' ? 'text-primary' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+              >
+                Проекты
+                {adminTab === 'projects' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+              </button>
+              <button 
+                onClick={() => setAdminTab('orders')}
+                className={`pb-2 text-sm font-medium transition-colors relative ${adminTab === 'orders' ? 'text-primary' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+              >
+                Заявки
+                {adminTab === 'orders' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+              </button>
+            </div>
+          </div>
+          {adminTab === 'projects' && (
+            <button onClick={handleCreateNew} className="px-6 py-3 bg-primary hover:bg-green-500 transition-colors text-slate-900 font-bold rounded-lg flex items-center gap-2 shadow-lg shadow-primary/20">
+              <span className="material-symbols-outlined">add</span>
+              Добавить проект
+            </button>
+          )}
         </div>
-        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden overflow-x-auto">
-          <table className="w-full text-left min-w-[800px]">
-            <thead>
-              <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
-                <th className="p-4 w-12 text-slate-500 font-medium">#</th>
-                <th className="p-4 w-24 text-slate-500 font-medium">Фото</th>
-                <th className="p-4 text-slate-500 font-medium">Название</th>
-                <th className="p-4 text-slate-500 font-medium">Серия</th>
-                <th className="p-4 text-slate-500 font-medium">Цена</th>
-                <th className="p-4 text-right text-slate-500 font-medium">Действия</th>
-              </tr>
-            </thead>
-            <tbody>
-              {projects.map((project, index) => (
-                <tr key={project.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                  <td className="p-4 text-slate-500">{index + 1}</td>
-                  <td className="p-4">
-                    <div className="w-16 h-12 rounded bg-slate-100 dark:bg-slate-800 bg-cover bg-center border border-slate-200 dark:border-slate-700 flex items-center justify-center" style={project.image ? { backgroundImage: `url(${project.image})` } : {}}>
-                      {!project.image && <span className="material-symbols-outlined text-slate-400 text-sm">image</span>}
-                    </div>
-                  </td>
-                  <td className="p-4 font-medium text-slate-900 dark:text-white">
-                    {project.title}
-                    {project.isPopular && <span className="ml-2 px-2 py-0.5 bg-orange-100 text-orange-600 text-xs rounded-full">Популярный</span>}
-                  </td>
-                  <td className="p-4 text-slate-600 dark:text-slate-400">{project.series}</td>
-                  <td className="p-4 font-medium text-slate-900 dark:text-white">{new Intl.NumberFormat('ru-RU').format(project.price)} ₽</td>
-                  <td className="p-4 text-right">
-                    <div className="flex items-center justify-end gap-2">
-                      <button onClick={() => handleEdit(project)} className="p-2 text-slate-400 hover:text-primary transition-colors" title="Редактировать">
-                        <span className="material-symbols-outlined">edit</span>
-                      </button>
-                      <button onClick={() => handleDuplicate(project)} className="p-2 text-slate-400 hover:text-blue-500 transition-colors" title="Дублировать">
-                        <span className="material-symbols-outlined">content_copy</span>
-                      </button>
-                      <button onClick={() => handleDelete(project.id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors" title="Удалить">
+
+        {adminTab === 'projects' ? (
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden overflow-x-auto">
+            <table className="w-full text-left min-w-[800px]">
+              <thead>
+                <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+                  <th className="p-4 w-12 text-slate-500 font-medium">#</th>
+                  <th className="p-4 w-24 text-slate-500 font-medium">Фото</th>
+                  <th className="p-4 text-slate-500 font-medium">Название</th>
+                  <th className="p-4 text-slate-500 font-medium">Серия</th>
+                  <th className="p-4 text-slate-500 font-medium">Цена</th>
+                  <th className="p-4 text-right text-slate-500 font-medium">Действия</th>
+                </tr>
+              </thead>
+              <tbody>
+                {projects.map((project, index) => (
+                  <tr key={project.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="p-4 text-slate-500">{index + 1}</td>
+                    <td className="p-4">
+                      <div className="w-16 h-12 rounded bg-slate-100 dark:bg-slate-800 bg-cover bg-center border border-slate-200 dark:border-slate-700 flex items-center justify-center" style={project.image ? { backgroundImage: `url(${project.image})` } : {}}>
+                        {!project.image && <span className="material-symbols-outlined text-slate-400 text-sm">image</span>}
+                      </div>
+                    </td>
+                    <td className="p-4 font-medium text-slate-900 dark:text-white">
+                      {project.title}
+                      {project.isPopular && <span className="ml-2 px-2 py-0.5 bg-orange-100 text-orange-600 text-xs rounded-full">Популярный</span>}
+                    </td>
+                    <td className="p-4 text-slate-600 dark:text-slate-400">{project.series}</td>
+                    <td className="p-4 font-medium text-slate-900 dark:text-white">{new Intl.NumberFormat('ru-RU').format(project.price)} ₽</td>
+                    <td className="p-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button onClick={() => handleEdit(project)} className="p-2 text-slate-400 hover:text-primary transition-colors" title="Редактировать">
+                          <span className="material-symbols-outlined">edit</span>
+                        </button>
+                        <button onClick={() => handleDuplicate(project)} className="p-2 text-slate-400 hover:text-blue-500 transition-colors" title="Дублировать">
+                          <span className="material-symbols-outlined">content_copy</span>
+                        </button>
+                        <button onClick={() => handleDelete(project.id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors" title="Удалить">
+                          <span className="material-symbols-outlined">delete</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden overflow-x-auto">
+            <table className="w-full text-left min-w-[800px]">
+              <thead>
+                <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+                  <th className="p-4 text-slate-500 font-medium">Дата</th>
+                  <th className="p-4 text-slate-500 font-medium">Имя</th>
+                  <th className="p-4 text-slate-500 font-medium">Телефон</th>
+                  <th className="p-4 text-slate-500 font-medium">Проект</th>
+                  <th className="p-4 text-slate-500 font-medium">Статус</th>
+                  <th className="p-4 text-right text-slate-500 font-medium">Действия</th>
+                </tr>
+              </thead>
+              <tbody>
+                {orders.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="p-8 text-center text-slate-500">Нет заявок</td>
+                  </tr>
+                ) : orders.map((order) => (
+                  <tr key={order.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="p-4 text-slate-600 dark:text-slate-400 text-sm">
+                      {new Date(order.createdAt).toLocaleString('ru-RU')}
+                    </td>
+                    <td className="p-4 font-medium text-slate-900 dark:text-white">
+                      {order.name || <span className="text-slate-400 italic">Не указано</span>}
+                    </td>
+                    <td className="p-4 font-medium text-slate-900 dark:text-white">{order.phone}</td>
+                    <td className="p-4 text-slate-600 dark:text-slate-400">
+                      {order.projectTitle ? (
+                        <span className="flex items-center gap-1">
+                          <span className="material-symbols-outlined text-[16px] text-primary">home</span>
+                          {order.projectTitle}
+                        </span>
+                      ) : (
+                        <span className="text-slate-400 italic">С главной страницы</span>
+                      )}
+                    </td>
+                    <td className="p-4">
+                      <select 
+                        value={order.status}
+                        onChange={(e) => updateOrderStatus(order.id, e.target.value as Order['status'])}
+                        className={`text-sm font-medium px-3 py-1 rounded-full outline-none cursor-pointer border ${
+                          order.status === 'new' ? 'bg-blue-50 text-blue-600 border-blue-200' :
+                          order.status === 'in_progress' ? 'bg-orange-50 text-orange-600 border-orange-200' :
+                          order.status === 'done' ? 'bg-green-50 text-green-600 border-green-200' :
+                          'bg-red-50 text-red-600 border-red-200'
+                        }`}
+                      >
+                        <option value="new">Новая</option>
+                        <option value="in_progress">В работе</option>
+                        <option value="done">Выполнена</option>
+                        <option value="rejected">Отказ</option>
+                      </select>
+                    </td>
+                    <td className="p-4 text-right">
+                      <button onClick={() => handleDeleteOrder(order.id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors" title="Удалить">
                         <span className="material-symbols-outlined">delete</span>
                       </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         {projectToDelete && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">

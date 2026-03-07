@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import { useProjects } from '../context/ProjectContext';
 
 export default function Home() {
@@ -21,18 +23,26 @@ export default function Home() {
     setCurrentSlide((prev) => (prev === 0 ? popularProjects.length - 3 : prev - 1));
   };
 
-  const handlePhoneSubmit = (e: React.FormEvent) => {
+  const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phone) return;
     
     setIsSubmitting(true);
-    // Имитация отправки
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await addDoc(collection(db, 'orders'), {
+        phone: phone,
+        source: 'home_page',
+        status: 'new',
+        createdAt: Date.now()
+      });
       setIsSuccess(true);
       setPhone('');
       setTimeout(() => setIsSuccess(false), 5000);
-    }, 1500);
+    } catch (error) {
+      console.error("Error adding order: ", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (loading) {

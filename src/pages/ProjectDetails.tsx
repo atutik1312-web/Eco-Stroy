@@ -1,5 +1,7 @@
 import { useParams, Link } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 import { useProjects } from '../context/ProjectContext';
 
 export default function ProjectDetails() {
@@ -58,18 +60,30 @@ export default function ProjectDetails() {
     return new Intl.NumberFormat('ru-RU').format(price) + ' ₽';
   };
 
-  const handleOrderSubmit = (e: React.FormEvent) => {
+  const handleOrderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await addDoc(collection(db, 'orders'), {
+        name: formData.name,
+        phone: formData.phone,
+        projectId: project.id,
+        projectTitle: project.title,
+        source: 'project_details',
+        status: 'new',
+        createdAt: Date.now()
+      });
       setIsSuccess(true);
       setTimeout(() => {
         setIsSuccess(false);
         setIsModalOpen(false);
         setFormData({ name: '', phone: '' });
       }, 3000);
-    }, 1500);
+    } catch (error) {
+      console.error("Error adding order: ", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (loading) {
