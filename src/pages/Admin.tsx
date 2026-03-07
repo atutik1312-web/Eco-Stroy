@@ -261,24 +261,40 @@ export default function Admin() {
                   </tr>
                 ) : orders.map((order) => (
                   <tr key={order.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
-                    <td className="p-4 text-slate-600 dark:text-slate-400 text-sm">
+                    <td className="p-4 text-slate-600 dark:text-slate-400 text-sm align-top">
                       {new Date(order.createdAt).toLocaleString('ru-RU')}
                     </td>
-                    <td className="p-4 font-medium text-slate-900 dark:text-white">
+                    <td className="p-4 font-medium text-slate-900 dark:text-white align-top">
                       {order.name || <span className="text-slate-400 italic">Не указано</span>}
+                      {order.email && <div className="text-xs text-slate-500 font-normal mt-1">{order.email}</div>}
                     </td>
-                    <td className="p-4 font-medium text-slate-900 dark:text-white">{order.phone}</td>
-                    <td className="p-4 text-slate-600 dark:text-slate-400">
-                      {order.projectTitle ? (
-                        <span className="flex items-center gap-1">
+                    <td className="p-4 font-medium text-slate-900 dark:text-white align-top">{order.phone}</td>
+                    <td className="p-4 text-slate-600 dark:text-slate-400 align-top max-w-xs">
+                      {order.source === 'project_details' && order.projectTitle && (
+                        <span className="flex items-center gap-1 font-medium text-slate-900 dark:text-white">
                           <span className="material-symbols-outlined text-[16px] text-primary">home</span>
                           {order.projectTitle}
                         </span>
-                      ) : (
-                        <span className="text-slate-400 italic">С главной страницы</span>
+                      )}
+                      {order.source === 'home_page' && <span className="text-slate-500 italic">С главной страницы</span>}
+                      {order.source === 'contacts_page' && <span className="text-slate-500 italic">Со страницы контактов</span>}
+                      {order.source === 'calculator' && <span className="text-slate-500 italic">С калькулятора</span>}
+                      
+                      {order.message && (
+                        <div className="mt-2 text-sm bg-slate-50 dark:bg-slate-800/50 p-2 rounded border border-slate-100 dark:border-slate-700">
+                          <span className="font-medium text-xs text-slate-500 block mb-1">Сообщение:</span>
+                          {order.message}
+                        </div>
+                      )}
+                      
+                      {order.summary && (
+                        <div className="mt-2 text-xs bg-slate-50 dark:bg-slate-800/50 p-2 rounded border border-slate-100 dark:border-slate-700 whitespace-pre-line">
+                          <span className="font-medium text-slate-500 block mb-1">Расчет:</span>
+                          {order.summary}
+                        </div>
                       )}
                     </td>
-                    <td className="p-4">
+                    <td className="p-4 align-top">
                       <select 
                         value={order.status}
                         onChange={(e) => updateOrderStatus(order.id, e.target.value as Order['status'])}

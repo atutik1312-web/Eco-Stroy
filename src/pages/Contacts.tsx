@@ -1,22 +1,33 @@
 import React, { useState } from 'react';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 export default function Contacts() {
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
-    console.log('Отправка заявки со страницы Контакты:', formData);
-
-    // Имитация отправки на сервер
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await addDoc(collection(db, 'orders'), {
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        message: formData.message,
+        source: 'contacts_page',
+        status: 'new',
+        createdAt: Date.now()
+      });
       setIsSuccess(true);
       setFormData({ name: '', phone: '', email: '', message: '' });
-    }, 1500);
+    } catch (error) {
+      console.error("Error adding order: ", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

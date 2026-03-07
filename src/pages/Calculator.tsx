@@ -1,5 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { collection, addDoc } from 'firebase/firestore';
+import { db } from '../lib/firebase';
 
 const PRICES = {
   areaPerM2: 65000,
@@ -193,7 +195,7 @@ export default function Calculator() {
     }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
 
@@ -215,18 +217,22 @@ export default function Calculator() {
       `Итоговая стоимость: ${formatPrice(calculateTotal)}`
     ].filter(Boolean).join('\n');
 
-    const payload = {
-      ...formData,
-      summary
-    };
-
-    console.log('Отправка заявки с калькулятора:', payload);
-
-    // Имитация отправки на сервер
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      await addDoc(collection(db, 'orders'), {
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        summary: summary,
+        source: 'calculator',
+        status: 'new',
+        createdAt: Date.now()
+      });
       setIsSuccess(true);
-    }, 1500);
+    } catch (error) {
+      console.error("Error adding order: ", error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const renderStepContent = () => {
