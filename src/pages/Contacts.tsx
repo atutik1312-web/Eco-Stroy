@@ -6,9 +6,21 @@ export default function Contacts() {
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [botField, setBotField] = useState('');
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (botField) {
+      setIsSuccess(true);
+      setFormData({ name: '', phone: '', email: '', message: '' });
+      return;
+    }
+
+    if (formData.phone.length !== 10) return;
+    if (formData.name.length < 2) return;
+    if (formData.message.length < 30) return;
+
     setIsSubmitting(true);
 
     try {
@@ -100,23 +112,30 @@ export default function Contacts() {
                       type="text" 
                       id="name" 
                       value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      onChange={(e) => setFormData({...formData, name: e.target.value.replace(/[^a-zA-Zа-яА-ЯёЁ\s-]/g, '').slice(0, 30)})}
                       className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-transparent text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" 
                       placeholder="Иван Иванов" 
-                      required 
+                      required
+                      minLength={2}
+                      maxLength={30}
                     />
                   </div>
                   <div className="flex flex-col gap-2">
                     <label htmlFor="phone" className="text-sm font-medium text-slate-700 dark:text-slate-300">Телефон *</label>
-                    <input 
-                      type="tel" 
-                      id="phone" 
-                      value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-transparent text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" 
-                      placeholder="+7 (___) ___-__-__" 
-                      required 
-                    />
+                    <div className="relative flex items-center">
+                      <span className="absolute left-4 text-slate-500 font-medium">+7</span>
+                      <input 
+                        type="tel" 
+                        id="phone" 
+                        value={formData.phone}
+                        onChange={(e) => setFormData({...formData, phone: e.target.value.replace(/\D/g, '').slice(0, 10)})}
+                        className="h-12 pl-10 pr-4 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-transparent text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all" 
+                        placeholder="(999) 000-00-00" 
+                        required
+                        minLength={10}
+                        maxLength={10}
+                      />
+                    </div>
                   </div>
                   <div className="flex flex-col gap-2">
                     <label htmlFor="email" className="text-sm font-medium text-slate-700 dark:text-slate-300">Email</label>
@@ -130,16 +149,36 @@ export default function Contacts() {
                     />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label htmlFor="message" className="text-sm font-medium text-slate-700 dark:text-slate-300">Сообщение</label>
+                    <div className="flex justify-between items-end">
+                      <label htmlFor="message" className="text-sm font-medium text-slate-700 dark:text-slate-300">Сообщение *</label>
+                      <span className={`text-xs ${formData.message.length > 0 && (formData.message.length < 30 || formData.message.length > 200) ? 'text-red-500' : 'text-slate-500'}`}>
+                        {formData.message.length}/200
+                      </span>
+                    </div>
                     <textarea 
                       id="message" 
                       rows={4} 
                       value={formData.message}
-                      onChange={(e) => setFormData({...formData, message: e.target.value})}
+                      onChange={(e) => setFormData({...formData, message: e.target.value.slice(0, 200)})}
                       className="p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-transparent text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all resize-none" 
-                      placeholder="Опишите ваш проект или задайте вопрос..."
+                      placeholder="Опишите ваш проект или задайте вопрос (минимум 30 символов)..."
+                      required
+                      minLength={30}
+                      maxLength={200}
                     ></textarea>
                   </div>
+                  
+                  {/* Honeypot field */}
+                  <input 
+                    type="text" 
+                    name="website" 
+                    style={{ display: 'none' }} 
+                    tabIndex={-1} 
+                    autoComplete="off" 
+                    value={botField}
+                    onChange={(e) => setBotField(e.target.value)} 
+                  />
+
                   <button 
                     type="submit" 
                     disabled={isSubmitting}

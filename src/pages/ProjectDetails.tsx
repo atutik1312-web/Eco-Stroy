@@ -16,6 +16,7 @@ export default function ProjectDetails() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [formData, setFormData] = useState({ name: '', phone: '' });
+  const [botField, setBotField] = useState('');
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -62,6 +63,20 @@ export default function ProjectDetails() {
 
   const handleOrderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (botField) {
+      setIsSuccess(true);
+      setTimeout(() => {
+        setIsSuccess(false);
+        setIsModalOpen(false);
+        setFormData({ name: '', phone: '' });
+      }, 3000);
+      return;
+    }
+
+    if (formData.phone.length !== 10) return;
+    if (formData.name.length < 2) return;
+
     setIsSubmitting(true);
     try {
       await addDoc(collection(db, 'orders'), {
@@ -343,29 +358,48 @@ export default function ProjectDetails() {
                 ) : (
                   <form onSubmit={handleOrderSubmit} className="flex flex-col gap-4">
                     <div className="flex flex-col gap-1.5">
-                      <label htmlFor="name" className="text-sm font-medium text-slate-700 dark:text-slate-300">Ваше имя</label>
+                      <label htmlFor="name" className="text-sm font-medium text-slate-700 dark:text-slate-300">Ваше имя *</label>
                       <input 
                         id="name"
                         type="text" 
                         required
                         value={formData.name}
-                        onChange={(e) => setFormData({...formData, name: e.target.value})}
+                        onChange={(e) => setFormData({...formData, name: e.target.value.replace(/[^a-zA-Zа-яА-ЯёЁ\s-]/g, '').slice(0, 30)})}
                         className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
                         placeholder="Иван Иванов"
+                        minLength={2}
+                        maxLength={30}
                       />
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <label htmlFor="phone" className="text-sm font-medium text-slate-700 dark:text-slate-300">Номер телефона</label>
-                      <input 
-                        id="phone"
-                        type="tel" 
-                        required
-                        value={formData.phone}
-                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                        className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
-                        placeholder="+7 (___) ___-__-__"
-                      />
+                      <label htmlFor="phone" className="text-sm font-medium text-slate-700 dark:text-slate-300">Номер телефона *</label>
+                      <div className="relative flex items-center">
+                        <span className="absolute left-4 text-slate-500 font-medium">+7</span>
+                        <input 
+                          id="phone"
+                          type="tel" 
+                          required
+                          value={formData.phone}
+                          onChange={(e) => setFormData({...formData, phone: e.target.value.replace(/\D/g, '').slice(0, 10)})}
+                          className="h-12 pl-10 pr-4 w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
+                          placeholder="(999) 000-00-00"
+                          minLength={10}
+                          maxLength={10}
+                        />
+                      </div>
                     </div>
+                    
+                    {/* Honeypot field */}
+                    <input 
+                      type="text" 
+                      name="website" 
+                      style={{ display: 'none' }} 
+                      tabIndex={-1} 
+                      autoComplete="off" 
+                      value={botField}
+                      onChange={(e) => setBotField(e.target.value)} 
+                    />
+
                     <button 
                       type="submit"
                       disabled={isSubmitting}

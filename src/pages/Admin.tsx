@@ -246,6 +246,7 @@ export default function Admin() {
             <table className="w-full text-left min-w-[800px]">
               <thead>
                 <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+                  <th className="p-4 w-12 text-slate-500 font-medium">№</th>
                   <th className="p-4 text-slate-500 font-medium">Дата</th>
                   <th className="p-4 text-slate-500 font-medium">Имя</th>
                   <th className="p-4 text-slate-500 font-medium">Телефон</th>
@@ -257,10 +258,11 @@ export default function Admin() {
               <tbody>
                 {orders.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="p-8 text-center text-slate-500">Нет заявок</td>
+                    <td colSpan={7} className="p-8 text-center text-slate-500">Нет заявок</td>
                   </tr>
-                ) : orders.map((order) => (
+                ) : orders.map((order, index) => (
                   <tr key={order.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="p-4 text-slate-500 font-medium align-top">{orders.length - index}</td>
                     <td className="p-4 text-slate-600 dark:text-slate-400 text-sm align-top">
                       {new Date(order.createdAt).toLocaleString('ru-RU')}
                     </td>

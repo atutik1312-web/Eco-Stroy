@@ -12,6 +12,7 @@ export default function Home() {
   const [phone, setPhone] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [botField, setBotField] = useState('');
 
   const nextSlide = () => {
     if (popularProjects.length <= 3) return;
@@ -25,8 +26,15 @@ export default function Home() {
 
   const handlePhoneSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!phone) return;
+    if (!phone || phone.length !== 10) return;
     
+    if (botField) {
+      setIsSuccess(true);
+      setPhone('');
+      setTimeout(() => setIsSuccess(false), 5000);
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await addDoc(collection(db, 'orders'), {
@@ -253,14 +261,31 @@ export default function Home() {
               </div>
             ) : (
               <>
+                <div className="relative flex items-center w-full md:w-auto">
+                  <span className="absolute left-4 text-slate-900 font-medium">+7</span>
+                  <input 
+                    className="h-14 pl-10 pr-5 w-full rounded-lg border-0 bg-white/90 text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-slate-900 min-w-[260px] outline-none" 
+                    placeholder="(999) 000-00-00" 
+                    type="tel" 
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))}
+                    required
+                    minLength={10}
+                    maxLength={10}
+                  />
+                </div>
+                
+                {/* Honeypot field */}
                 <input 
-                  className="h-14 px-5 rounded-lg border-0 bg-white/90 text-slate-900 placeholder:text-slate-500 focus:ring-2 focus:ring-slate-900 min-w-[260px] outline-none" 
-                  placeholder="+7 (___) ___-__-__" 
-                  type="tel" 
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  required
+                  type="text" 
+                  name="website" 
+                  style={{ display: 'none' }} 
+                  tabIndex={-1} 
+                  autoComplete="off" 
+                  value={botField}
+                  onChange={(e) => setBotField(e.target.value)} 
                 />
+
                 <button 
                   type="submit"
                   disabled={isSubmitting}
