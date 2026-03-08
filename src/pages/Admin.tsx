@@ -156,6 +156,59 @@ export default function Admin() {
     }
   };
 
+  const handleExportBackup = () => {
+    try {
+      const dataStr = JSON.stringify(projects, null, 2);
+      const blob = new Blob([dataStr], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `ecostroy_projects_backup_${new Date().toISOString().split('T')[0]}.json`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      showNotification('Резервная копия успешно скачана');
+    } catch (error) {
+      console.error('Export error:', error);
+      showNotification('Ошибка при создании бэкапа', 'error');
+    }
+  };
+
+  const handleImportBackup = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const importedData = JSON.parse(e.target?.result as string);
+        if (Array.isArray(importedData)) {
+          if (window.confirm(`Найдено ${importedData.length} проектов в файле. Восстановить их? (Существующие проекты с такими же ID будут перезаписаны)`)) {
+            for (const proj of importedData) {
+              if (proj && proj.id) {
+                const exists = projects.some(p => p.id === proj.id);
+                if (exists) {
+                  updateProject(proj.id, proj);
+                } else {
+                  addProject(proj);
+                }
+              }
+            }
+            showNotification('Проекты успешно восстановлены!');
+          }
+        } else {
+          showNotification('Неверный формат файла бэкапа', 'error');
+        }
+      } catch (error) {
+        console.error('Import error:', error);
+        showNotification('Ошибка при чтении файла', 'error');
+      }
+    };
+    reader.readAsText(file);
+    event.target.value = ''; // Reset input
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -188,10 +241,27 @@ export default function Admin() {
             </div>
           </div>
           {adminTab === 'projects' && (
-            <button onClick={handleCreateNew} className="px-6 py-3 bg-primary hover:bg-green-500 transition-colors text-slate-900 font-bold rounded-lg flex items-center gap-2 shadow-lg shadow-primary/20">
-              <span className="material-symbols-outlined">add</span>
-              Добавить проект
-            </button>
+            <div className="flex items-center gap-2 md:gap-3">
+              <input 
+                type="file" 
+                id="import-backup" 
+                accept=".json" 
+                className="hidden" 
+                onChange={handleImportBackup} 
+              />
+              <button onClick={() => document.getElementById('import-backup')?.click()} className="px-3 md:px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-slate-700 dark:text-slate-300 font-medium rounded-lg flex items-center gap-2" title="Восстановить из резервной копии">
+                <span className="material-symbols-outlined">upload</span>
+                <span className="hidden sm:inline">Восстановить</span>
+              </button>
+              <button onClick={handleExportBackup} className="px-3 md:px-4 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-slate-700 dark:text-slate-300 font-medium rounded-lg flex items-center gap-2" title="Скачать резервную копию">
+                <span className="material-symbols-outlined">download</span>
+                <span className="hidden sm:inline">Бэкап</span>
+              </button>
+              <button onClick={handleCreateNew} className="px-4 md:px-6 py-2 bg-primary hover:bg-green-500 transition-colors text-slate-900 font-bold rounded-lg flex items-center gap-2 shadow-lg shadow-primary/20">
+                <span className="material-symbols-outlined">add</span>
+                <span className="hidden sm:inline">Добавить проект</span>
+              </button>
+            </div>
           )}
         </div>
 
