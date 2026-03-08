@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useProjects } from '../context/ProjectContext';
+import { sendTelegramNotification } from '../lib/telegram';
 
 export default function Home() {
   const { projects, loading } = useProjects();
@@ -43,6 +44,12 @@ export default function Home() {
         status: 'new',
         createdAt: Date.now()
       });
+
+      await sendTelegramNotification({
+        phone: phone,
+        source: 'home_page'
+      });
+
       setIsSuccess(true);
       setPhone('');
       setTimeout(() => setIsSuccess(false), 5000);

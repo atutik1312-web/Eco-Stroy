@@ -1,8 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, getDocs, writeBatch } from 'firebase/firestore';
+import { collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { Project, ConfigSection } from '../types/project';
-import { MOCK_PROJECTS } from '../data/projects';
 
 interface ProjectContextType {
   projects: Project[];
@@ -132,35 +131,6 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     const initFirebase = async () => {
       try {
-        // Check if collection is empty
-        const snapshot = await getDocs(projectsCol);
-        if (snapshot.empty) {
-          console.log('Firestore is empty. Populating with mock data...');
-          const batch = writeBatch(db);
-          
-          const initialProjects = MOCK_PROJECTS.map(p => ({
-            ...p,
-            priceWarm: p.price,
-            priceTurnkey: Math.round(p.price * 1.3),
-            gallery: [
-              p.image,
-              ...[1, 2, 3, 4].map(i => `https://picsum.photos/seed/${p.id}${i}/1200/900`)
-            ],
-            floorPlans: Array.from({ length: parseInt(p.floors) || 1 }).map((_, i) => `https://picsum.photos/seed/floorplan${p.id}${i}/1200/900`),
-            configurations: DEFAULT_CONFIGS
-          })) as Project[];
-
-          initialProjects.forEach(project => {
-            const docRef = doc(projectsCol, project.id);
-            batch.set(docRef, project);
-          });
-
-          await batch.commit();
-          console.log('Mock data populated successfully!');
-        }
-      } catch (error) {
-        console.error("Error populating Firestore:", error);
-      } finally {
         // Subscribe to real-time updates
         unsubscribe = onSnapshot(projectsCol, (snapshot) => {
           const projectsData = snapshot.docs.map(doc => doc.data() as Project);
@@ -172,6 +142,9 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
           console.error("Error fetching projects:", error);
           setLoading(false);
         });
+      } catch (error) {
+        console.error("Error initializing Firebase:", error);
+        setLoading(false);
       }
     };
 

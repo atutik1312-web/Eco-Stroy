@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { sendTelegramNotification } from '../lib/telegram';
 
 const PRICES = {
   areaPerM2: 65000,
@@ -237,6 +238,15 @@ export default function Calculator() {
         status: 'new',
         createdAt: Date.now()
       });
+
+      await sendTelegramNotification({
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        summary: summary,
+        source: 'calculator'
+      });
+
       setIsSuccess(true);
     } catch (error) {
       console.error("Error adding order: ", error);

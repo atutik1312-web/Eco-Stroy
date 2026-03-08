@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
+import { sendTelegramNotification } from '../lib/telegram';
 
 export default function Contacts() {
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '' });
@@ -33,6 +34,15 @@ export default function Contacts() {
         status: 'new',
         createdAt: Date.now()
       });
+
+      await sendTelegramNotification({
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        message: formData.message,
+        source: 'contacts_page'
+      });
+
       setIsSuccess(true);
       setFormData({ name: '', phone: '', email: '', message: '' });
     } catch (error) {

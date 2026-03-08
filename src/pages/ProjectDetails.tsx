@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useProjects } from '../context/ProjectContext';
+import { sendTelegramNotification } from '../lib/telegram';
 
 export default function ProjectDetails() {
   const { id } = useParams();
@@ -88,6 +89,14 @@ export default function ProjectDetails() {
         status: 'new',
         createdAt: Date.now()
       });
+
+      await sendTelegramNotification({
+        name: formData.name,
+        phone: formData.phone,
+        projectTitle: project.title,
+        source: 'project_details'
+      });
+
       setIsSuccess(true);
       setTimeout(() => {
         setIsSuccess(false);
