@@ -100,8 +100,9 @@ export default function Admin() {
 
   const handleSavePortfolio = () => {
     if (currentPortfolioProject) {
-      if (!currentPortfolioProject.images || !currentPortfolioProject.images[0]) {
-        showNotification('Укажите ссылку на главное фото проекта', 'error');
+      const validImages = currentPortfolioProject.images?.filter(img => img && img.trim() !== '') || [];
+      if (validImages.length === 0) {
+        showNotification('Укажите хотя бы одну ссылку на фото проекта', 'error');
         return;
       }
 

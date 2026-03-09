@@ -3,25 +3,36 @@ import { useProjects } from '../context/ProjectContext';
 
 const ProjectGallery = ({ images }: { images: string[] }) => {
   const [activeIdx, setActiveIdx] = useState(0);
+  const validImages = images?.filter(img => img && img.trim() !== '') || [];
+  
+  if (validImages.length === 0) {
+    return (
+      <div className="aspect-[4/3] w-full overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+        <span className="material-symbols-outlined text-4xl text-slate-400">image</span>
+      </div>
+    );
+  }
+
+  const safeIdx = activeIdx < validImages.length ? activeIdx : 0;
   
   return (
     <div className="flex flex-col gap-3 w-full">
       <div className="aspect-[4/3] w-full overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800">
         <img 
-          src={images[activeIdx]} 
+          src={validImages[safeIdx]} 
           alt="Main project view" 
           className="w-full h-full object-cover transition-opacity duration-300" 
           referrerPolicy="no-referrer" 
         />
       </div>
-      {images.length > 1 && (
+      {validImages.length > 1 && (
         <div className="grid grid-cols-5 gap-2 sm:gap-3">
-          {images.slice(0, 5).map((img, idx) => (
+          {validImages.map((img, idx) => (
             <button 
               key={idx} 
               onClick={() => setActiveIdx(idx)}
               className={`aspect-square rounded-lg overflow-hidden border-2 transition-all ${
-                activeIdx === idx 
+                safeIdx === idx 
                   ? 'border-primary opacity-100' 
                   : 'border-transparent opacity-60 hover:opacity-100'
               }`}
