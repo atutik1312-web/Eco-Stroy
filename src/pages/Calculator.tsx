@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { sendTelegramNotification } from '../lib/telegram';
+import { sendEmailNotification } from '../lib/email';
 
 const PRICES = {
   areaPerM2: 65000,
@@ -240,6 +241,14 @@ export default function Calculator() {
       });
 
       await sendTelegramNotification({
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        summary: summary,
+        source: 'calculator'
+      });
+
+      await sendEmailNotification({
         name: formData.name,
         phone: formData.phone,
         email: formData.email,

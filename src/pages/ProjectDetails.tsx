@@ -4,6 +4,7 @@ import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useProjects } from '../context/ProjectContext';
 import { sendTelegramNotification } from '../lib/telegram';
+import { sendEmailNotification } from '../lib/email';
 
 export default function ProjectDetails() {
   const { id } = useParams();
@@ -91,6 +92,13 @@ export default function ProjectDetails() {
       });
 
       await sendTelegramNotification({
+        name: formData.name,
+        phone: formData.phone,
+        projectTitle: project.title,
+        source: 'project_details'
+      });
+
+      await sendEmailNotification({
         name: formData.name,
         phone: formData.phone,
         projectTitle: project.title,

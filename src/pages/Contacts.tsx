@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { sendTelegramNotification } from '../lib/telegram';
+import { sendEmailNotification } from '../lib/email';
 
 export default function Contacts() {
   const [formData, setFormData] = useState({ name: '', phone: '', email: '', message: '' });
@@ -36,6 +37,14 @@ export default function Contacts() {
       });
 
       await sendTelegramNotification({
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        message: formData.message,
+        source: 'contacts_page'
+      });
+
+      await sendEmailNotification({
         name: formData.name,
         phone: formData.phone,
         email: formData.email,

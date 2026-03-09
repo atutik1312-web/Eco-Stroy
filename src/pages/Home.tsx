@@ -4,6 +4,7 @@ import { collection, addDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useProjects } from '../context/ProjectContext';
 import { sendTelegramNotification } from '../lib/telegram';
+import { sendEmailNotification } from '../lib/email';
 
 export default function Home() {
   const { projects, loading } = useProjects();
@@ -46,6 +47,11 @@ export default function Home() {
       });
 
       await sendTelegramNotification({
+        phone: phone,
+        source: 'home_page'
+      });
+
+      await sendEmailNotification({
         phone: phone,
         source: 'home_page'
       });
