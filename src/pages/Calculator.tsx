@@ -801,13 +801,6 @@ export default function Calculator() {
                   </div>
                 </div>
               </div>
-              <div className="bg-wood-light/20 dark:bg-white/5 p-4 rounded-xl">
-                <h4 className="text-sm font-bold text-slate-900 dark:text-white mb-2">Нужна помощь?</h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">Не уверены, какой вариант выбрать? Наши консультанты помогут вам определиться.</p>
-                <a className="text-xs font-bold text-primary hover:underline flex items-center gap-1" href="#">
-                  Спросить эксперта <span className="material-symbols-outlined text-xs">open_in_new</span>
-                </a>
-              </div>
             </div>
           </div>
         </div>
