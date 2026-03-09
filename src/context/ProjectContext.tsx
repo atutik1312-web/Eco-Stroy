@@ -1,14 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { Project, ConfigSection } from '../types/project';
+import { Project, ConfigSection, PortfolioProject } from '../types/project';
 
 interface ProjectContextType {
   projects: Project[];
+  portfolioProjects: PortfolioProject[];
   loading: boolean;
   addProject: (project: Project) => void;
   updateProject: (id: string, project: Project) => void;
   deleteProject: (id: string) => void;
+  addPortfolioProject: (project: PortfolioProject) => void;
+  updatePortfolioProject: (id: string, project: PortfolioProject) => void;
+  deletePortfolioProject: (id: string) => void;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -123,23 +127,30 @@ export const DEFAULT_CONFIGS: ConfigSection[] = [
 
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [projects, setProjects] = useState<Project[]>([]);
+  const [portfolioProjects, setPortfolioProjects] = useState<PortfolioProject[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const projectsCol = collection(db, 'projects');
-    let unsubscribe: () => void;
+    const portfolioCol = collection(db, 'portfolio');
+    let unsubscribeProjects: () => void;
+    let unsubscribePortfolio: () => void;
 
     const initFirebase = async () => {
       try {
-        // Subscribe to real-time updates
-        unsubscribe = onSnapshot(projectsCol, (snapshot) => {
+        unsubscribeProjects = onSnapshot(projectsCol, (snapshot) => {
           const projectsData = snapshot.docs.map(doc => doc.data() as Project);
-          // Sort projects by creation time or just reverse to show newest first
-          // Since we don't have a createdAt field, we'll just reverse them for now
           setProjects(projectsData.reverse());
-          setLoading(false);
         }, (error) => {
           console.error("Error fetching projects:", error);
+        });
+
+        unsubscribePortfolio = onSnapshot(portfolioCol, (snapshot) => {
+          const portfolioData = snapshot.docs.map(doc => doc.data() as PortfolioProject);
+          setPortfolioProjects(portfolioData.reverse());
+          setLoading(false);
+        }, (error) => {
+          console.error("Error fetching portfolio:", error);
           setLoading(false);
         });
       } catch (error) {
@@ -151,7 +162,8 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     initFirebase();
 
     return () => {
-      if (unsubscribe) unsubscribe();
+      if (unsubscribeProjects) unsubscribeProjects();
+      if (unsubscribePortfolio) unsubscribePortfolio();
     };
   }, []);
 
@@ -179,8 +191,36 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   };
 
+  const addPortfolioProject = async (project: PortfolioProject) => {
+    try {
+      await setDoc(doc(db, 'portfolio', project.id), project);
+    } catch (error) {
+      console.error("Error adding portfolio project:", error);
+    }
+  };
+
+  const updatePortfolioProject = async (id: string, updated: PortfolioProject) => {
+    try {
+      await updateDoc(doc(db, 'portfolio', id), updated as any);
+    } catch (error) {
+      console.error("Error updating portfolio project:", error);
+    }
+  };
+
+  const deletePortfolioProject = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, 'portfolio', id));
+    } catch (error) {
+      console.error("Error deleting portfolio project:", error);
+    }
+  };
+
   return (
-    <ProjectContext.Provider value={{ projects, loading, addProject, updateProject, deleteProject }}>
+    <ProjectContext.Provider value={{ 
+      projects, portfolioProjects, loading, 
+      addProject, updateProject, deleteProject,
+      addPortfolioProject, updatePortfolioProject, deletePortfolioProject
+    }}>
       {children}
     </ProjectContext.Provider>
   );

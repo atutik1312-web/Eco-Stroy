@@ -2,18 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { collection, query, orderBy, onSnapshot, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useProjects, DEFAULT_CONFIGS } from '../context/ProjectContext';
-import { Project } from '../types/project';
+import { Project, PortfolioProject } from '../types/project';
 import { Order } from '../types/order';
 
 export default function Admin() {
-  const { projects, loading, addProject, updateProject, deleteProject } = useProjects();
-  const [view, setView] = useState<'list' | 'edit'>('list');
-  const [adminTab, setAdminTab] = useState<'projects' | 'orders'>('projects');
+  const { projects, portfolioProjects, loading, addProject, updateProject, deleteProject, addPortfolioProject, updatePortfolioProject, deletePortfolioProject } = useProjects();
+  const [view, setView] = useState<'list' | 'edit' | 'edit_portfolio'>('list');
+  const [adminTab, setAdminTab] = useState<'projects' | 'portfolio' | 'orders'>('projects');
   const [orders, setOrders] = useState<Order[]>([]);
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
+  const [currentPortfolioProject, setCurrentPortfolioProject] = useState<PortfolioProject | null>(null);
   const [activeTab, setActiveTab] = useState<'basic' | 'characteristics' | 'media' | 'config'>('basic');
   const [toast, setToast] = useState<{msg: string, type: 'success' | 'error'} | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
+  const [portfolioToDelete, setPortfolioToDelete] = useState<string | null>(null);
 
   const showNotification = (msg: string, type: 'success' | 'error' = 'success') => {
     setToast({ msg, type });
@@ -70,6 +72,61 @@ export default function Admin() {
 
   const handleDelete = (id: string) => {
     setProjectToDelete(id);
+  };
+
+  const handleCreateNewPortfolio = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const newProject: PortfolioProject = {
+      id: `portfolio-${Date.now()}`,
+      title: 'Новый проект портфолио',
+      description: '',
+      images: Array(5).fill('')
+    };
+    setCurrentPortfolioProject(newProject);
+    setView('edit_portfolio');
+  };
+
+  const handleEditPortfolio = (project: PortfolioProject) => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const projectCopy = JSON.parse(JSON.stringify(project));
+    if (!projectCopy.images) projectCopy.images = Array(5).fill('');
+    setCurrentPortfolioProject(projectCopy);
+    setView('edit_portfolio');
+  };
+
+  const handleDeletePortfolio = (id: string) => {
+    setPortfolioToDelete(id);
+  };
+
+  const handleSavePortfolio = () => {
+    if (currentPortfolioProject) {
+      if (!currentPortfolioProject.images || !currentPortfolioProject.images[0]) {
+        showNotification('Укажите ссылку на главное фото проекта', 'error');
+        return;
+      }
+
+      const exists = portfolioProjects.some(p => p.id === currentPortfolioProject.id);
+      if (exists) {
+        updatePortfolioProject(currentPortfolioProject.id, currentPortfolioProject);
+      } else {
+        addPortfolioProject(currentPortfolioProject);
+      }
+      showNotification('Проект портфолио успешно сохранен!');
+      setView('list');
+    }
+  };
+
+  const updatePortfolioField = (field: keyof PortfolioProject, value: any) => {
+    if (currentPortfolioProject) {
+      setCurrentPortfolioProject({ ...currentPortfolioProject, [field]: value });
+    }
+  };
+
+  const updatePortfolioImage = (index: number, value: string) => {
+    if (!currentPortfolioProject) return;
+    const newImages = [...(currentPortfolioProject.images || Array(5).fill(''))];
+    newImages[index] = value;
+    setCurrentPortfolioProject({ ...currentPortfolioProject, images: newImages });
   };
 
   const handleSave = () => {
@@ -232,6 +289,13 @@ export default function Admin() {
                 {adminTab === 'projects' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
               </button>
               <button 
+                onClick={() => setAdminTab('portfolio')}
+                className={`pb-2 text-sm font-medium transition-colors relative ${adminTab === 'portfolio' ? 'text-primary' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+              >
+                Портфолио
+                {adminTab === 'portfolio' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+              </button>
+              <button 
                 onClick={() => setAdminTab('orders')}
                 className={`pb-2 text-sm font-medium transition-colors relative ${adminTab === 'orders' ? 'text-primary' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
               >
@@ -263,9 +327,17 @@ export default function Admin() {
               </button>
             </div>
           )}
+          {adminTab === 'portfolio' && (
+            <div className="flex items-center gap-2 md:gap-3">
+              <button onClick={handleCreateNewPortfolio} className="px-4 md:px-6 py-2 bg-primary hover:bg-green-500 transition-colors text-slate-900 font-bold rounded-lg flex items-center gap-2 shadow-lg shadow-primary/20">
+                <span className="material-symbols-outlined">add</span>
+                <span className="hidden sm:inline">Добавить в портфолио</span>
+              </button>
+            </div>
+          )}
         </div>
 
-        {adminTab === 'projects' ? (
+        {adminTab === 'projects' && (
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden overflow-x-auto">
             <table className="w-full text-left min-w-[800px]">
               <thead>
@@ -311,7 +383,56 @@ export default function Admin() {
               </tbody>
             </table>
           </div>
-        ) : (
+        )}
+
+        {adminTab === 'portfolio' && (
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden overflow-x-auto">
+            <table className="w-full text-left min-w-[800px]">
+              <thead>
+                <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+                  <th className="p-4 w-12 text-slate-500 font-medium">#</th>
+                  <th className="p-4 w-24 text-slate-500 font-medium">Фото</th>
+                  <th className="p-4 text-slate-500 font-medium">Название</th>
+                  <th className="p-4 text-slate-500 font-medium">Описание</th>
+                  <th className="p-4 text-right text-slate-500 font-medium">Действия</th>
+                </tr>
+              </thead>
+              <tbody>
+                {portfolioProjects.map((project, index) => (
+                  <tr key={project.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="p-4 text-slate-500">{index + 1}</td>
+                    <td className="p-4">
+                      <div className="w-16 h-12 rounded bg-slate-100 dark:bg-slate-800 bg-cover bg-center border border-slate-200 dark:border-slate-700 flex items-center justify-center" style={project.images?.[0] ? { backgroundImage: `url(${project.images[0]})` } : {}}>
+                        {!project.images?.[0] && <span className="material-symbols-outlined text-slate-400 text-sm">image</span>}
+                      </div>
+                    </td>
+                    <td className="p-4 font-medium text-slate-900 dark:text-white">
+                      {project.title}
+                    </td>
+                    <td className="p-4 text-slate-600 dark:text-slate-400 max-w-xs truncate">{project.description}</td>
+                    <td className="p-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button onClick={() => handleEditPortfolio(project)} className="p-2 text-slate-400 hover:text-primary transition-colors" title="Редактировать">
+                          <span className="material-symbols-outlined">edit</span>
+                        </button>
+                        <button onClick={() => handleDeletePortfolio(project.id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors" title="Удалить">
+                          <span className="material-symbols-outlined">delete</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {portfolioProjects.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="p-8 text-center text-slate-500">Нет проектов в портфолио</td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {adminTab === 'orders' && (
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden overflow-x-auto">
             <table className="w-full text-left min-w-[800px]">
               <thead>
@@ -411,6 +532,79 @@ export default function Admin() {
             </div>
           </div>
         )}
+
+        {portfolioToDelete && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden p-6">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Удалить проект из портфолио?</h3>
+              <p className="text-slate-500 dark:text-slate-400 mb-6">Это действие нельзя будет отменить.</p>
+              <div className="flex justify-end gap-3">
+                <button onClick={() => setPortfolioToDelete(null)} className="px-4 py-2 rounded-lg font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">Отмена</button>
+                <button onClick={() => { 
+                  deletePortfolioProject(portfolioToDelete); 
+                  setPortfolioToDelete(null); 
+                  showNotification('Проект портфолио успешно удален!');
+                }} className="px-4 py-2 rounded-lg font-bold bg-red-500 hover:bg-red-600 text-white transition-colors">Удалить</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {toast && (
+          <div className={`fixed bottom-8 right-8 text-white px-6 py-4 rounded-xl flex items-center gap-3 z-[100] shadow-2xl animate-fade-in-up ${toast.type === 'error' ? 'bg-red-600' : 'bg-slate-900'}`}>
+            <span className={`material-symbols-outlined ${toast.type === 'error' ? 'text-white' : 'text-green-400'}`}>
+              {toast.type === 'error' ? 'error' : 'check_circle'}
+            </span>
+            <span className="font-bold">{toast.msg}</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (view === 'edit_portfolio' && currentPortfolioProject) {
+    return (
+      <div className="p-4 md:p-10 max-w-5xl mx-auto min-h-screen">
+        <div className="flex justify-between items-center mb-8">
+          <button onClick={() => setView('list')} className="flex items-center gap-2 p-2 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors">
+            <span className="material-symbols-outlined">arrow_back</span>
+            Назад к списку
+          </button>
+          <button onClick={handleSavePortfolio} className="px-8 py-3 bg-primary hover:bg-green-500 transition-colors text-slate-900 font-bold rounded-lg shadow-lg shadow-primary/20">
+            Сохранить проект
+          </button>
+        </div>
+
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden p-6 md:p-8">
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Название проекта</label>
+              <input type="text" value={currentPortfolioProject.title} onChange={e => updatePortfolioField('title', e.target.value)} className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none" placeholder="Например: Реализация проекта Нордическая ель" />
+            </div>
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Описание проекта</label>
+              <textarea value={currentPortfolioProject.description} onChange={e => updatePortfolioField('description', e.target.value)} className="h-48 p-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none resize-none" placeholder="Подробное описание работы..."></textarea>
+            </div>
+            
+            <div className="mt-4">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Галерея проекта (5 фото)</h3>
+              <p className="text-sm text-slate-500 mb-4">Вставьте ссылки на изображения. Первое изображение будет главным.</p>
+              <div className="flex flex-col gap-4">
+                {(currentPortfolioProject.images || Array(5).fill('')).map((url, index) => (
+                  <div key={index} className="flex gap-4 items-start">
+                    <div className="w-24 h-16 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex-shrink-0 bg-cover bg-center flex items-center justify-center overflow-hidden" style={url ? { backgroundImage: `url(${url})` } : {}}>
+                      {!url && <span className="material-symbols-outlined text-slate-400">image</span>}
+                    </div>
+                    <div className="flex-1 flex flex-col gap-1">
+                      <label className="text-xs font-medium text-slate-500">Фото {index + 1} {index === 0 && '(Главное)'}</label>
+                      <input type="text" value={url} onChange={e => updatePortfolioImage(index, e.target.value)} className="h-10 px-3 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none" placeholder="https://..." />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
 
         {toast && (
           <div className={`fixed bottom-8 right-8 text-white px-6 py-4 rounded-xl flex items-center gap-3 z-[100] shadow-2xl animate-fade-in-up ${toast.type === 'error' ? 'bg-red-600' : 'bg-slate-900'}`}>

@@ -29,8 +29,8 @@ export default function Footer() {
           </div>
           <div className="flex flex-col gap-4">
             <h4 className="font-bold text-slate-900 dark:text-white">Проекты</h4>
-            <Link to="/catalog" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-500 dark:text-slate-400 hover:text-primary transition-colors">Жилые дома</Link>
-            <Link to="/catalog" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-500 dark:text-slate-400 hover:text-primary transition-colors">Бани</Link>
+            <Link to="/catalog" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-500 dark:text-slate-400 hover:text-primary transition-colors">Каталог домов</Link>
+            <Link to="/portfolio" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-500 dark:text-slate-400 hover:text-primary transition-colors">Наше портфолио</Link>
             <Link to="/catalog" onClick={() => window.scrollTo(0, 0)} className="text-sm text-slate-500 dark:text-slate-400 hover:text-primary transition-colors">Индивидуальные проекты</Link>
           </div>
           <div className="flex flex-col gap-4">

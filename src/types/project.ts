@@ -9,6 +9,13 @@ export interface ConfigSection {
   rows: ConfigRow[];
 }
 
+export interface PortfolioProject {
+  id: string;
+  title: string;
+  description: string;
+  images: string[];
+}
+
 export interface Project {
   id: string;
   title: string;

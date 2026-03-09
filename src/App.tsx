@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Catalog from './pages/Catalog';
+import Portfolio from './pages/Portfolio';
 import Calculator from './pages/Calculator';
 import Technologies from './pages/Technologies';
 import About from './pages/About';
@@ -21,6 +22,7 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/catalog/:id" element={<ProjectDetails />} />
+            <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/calculator" element={<Calculator />} />
             <Route path="/technologies" element={<Technologies />} />
             <Route path="/about" element={<About />} />
