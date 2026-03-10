@@ -28,6 +28,8 @@ export interface Project {
   material: string;
   time: string;
   series: string;
+  houseSize?: string;
+  bathrooms?: string;
   image: string;
   badge: string | null;
   badgeColor: string;

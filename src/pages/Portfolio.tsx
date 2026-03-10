@@ -58,7 +58,7 @@ const ProjectGallery = ({ images, onOpenGallery }: { images: string[], onOpenGal
 };
 
 export default function Portfolio() {
-  const { portfolioProjects, loading, addPortfolioProject } = useProjects();
+  const { portfolioProjects, loading } = useProjects();
   
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -81,51 +81,6 @@ export default function Portfolio() {
     e.stopPropagation();
     setCurrentImageIndex((prev) => (prev === 0 ? galleryImages.length - 1 : prev - 1));
   };
-
-  // Initialize with dummy data if empty (only once)
-  useEffect(() => {
-    if (!loading && portfolioProjects.length === 0) {
-      const dummyData = [
-        {
-          id: '1',
-          title: 'Реализация проекта "Нордическая ель" в Подмосковье',
-          description: 'Строительство этого дома заняло 4 месяца. Клиент выбрал комплектацию "Теплый контур" с дополнительным утеплением крыши.\n\nОсобенностью проекта стала просторная терраса из лиственницы, которая идеально вписалась в лесной ландшафт участка. Внутренняя отделка выполнена в светлых тонах с сохранением естественной текстуры дерева.',
-          images: [
-            'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&q=80&w=1200',
-            'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&q=80&w=800',
-            'https://images.unsplash.com/photo-1542314831-c6a4d1409362?auto=format&fit=crop&q=80&w=800',
-            'https://images.unsplash.com/photo-1524431144429-03fdd30eee26?auto=format&fit=crop&q=80&w=800',
-            'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&q=80&w=800'
-          ]
-        },
-        {
-          id: '2',
-          title: 'Современный Барнхаус для большой семьи',
-          description: 'Индивидуальный проект в стиле барнхаус площадью 180 м². Главным пожеланием заказчика было создание максимально светлого пространства.\n\nМы реализовали панорамное остекление на главном фасаде и второй свет в зоне гостиной. Фасад отделан планкеном из лиственницы, покрытым натуральным маслом, что подчеркивает экологичность постройки.',
-          images: [
-            'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&q=80&w=1200',
-            'https://images.unsplash.com/photo-1600607687931-cebf0746e50e?auto=format&fit=crop&q=80&w=800',
-            'https://images.unsplash.com/photo-1600566753086-00f18efc204b?auto=format&fit=crop&q=80&w=800',
-            'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80&w=800',
-            'https://images.unsplash.com/photo-1600585154526-990dced4ea0d?auto=format&fit=crop&q=80&w=800'
-          ]
-        },
-        {
-          id: '3',
-          title: 'Уютный гостевой дом-баня',
-          description: 'Компактный проект, объединяющий в себе полноценную баню на дровах и комфортную зону отдыха для гостей.\n\nСруб выполнен из отборной сосны зимней рубки. В парной использована отделка из кедра и абаша. Просторная веранда позволяет комфортно отдыхать на свежем воздухе после банных процедур в любое время года.',
-          images: [
-            'https://images.unsplash.com/photo-1587061949409-02df41d5e562?auto=format&fit=crop&q=80&w=1200',
-            'https://images.unsplash.com/photo-1510798831971-661eb04b3739?auto=format&fit=crop&q=80&w=800',
-            'https://images.unsplash.com/photo-1542314831-c6a4d1409362?auto=format&fit=crop&q=80&w=800',
-            'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&q=80&w=800',
-            'https://images.unsplash.com/photo-1524431144429-03fdd30eee26?auto=format&fit=crop&q=80&w=800'
-          ]
-        }
-      ];
-      dummyData.forEach(p => addPortfolioProject(p));
-    }
-  }, [loading, portfolioProjects.length, addPortfolioProject]);
 
   if (loading) {
     return (

@@ -212,6 +212,28 @@ export default function ProjectDetails() {
                   <p className="font-bold text-slate-900 dark:text-white">{project.time}</p>
                 </div>
               </div>
+              {project.houseSize && (
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <span className="material-symbols-outlined">straighten</span>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Размер дома</p>
+                    <p className="font-bold text-slate-900 dark:text-white">{project.houseSize}</p>
+                  </div>
+                </div>
+              )}
+              {project.bathrooms && (
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <span className="material-symbols-outlined">bathtub</span>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Санузлов</p>
+                    <p className="font-bold text-slate-900 dark:text-white">{project.bathrooms}</p>
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="flex">

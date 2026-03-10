@@ -36,6 +36,8 @@ export default function Admin() {
       material: 'Кедр',
       time: '3-4 месяца',
       series: 'Сканди',
+      houseSize: '',
+      bathrooms: '',
       image: '',
       badge: null,
       badgeColor: 'bg-primary',
@@ -113,7 +115,6 @@ export default function Admin() {
         addPortfolioProject(currentPortfolioProject);
       }
       showNotification('Проект портфолио успешно сохранен!');
-      setView('list');
     }
   };
 
@@ -711,6 +712,14 @@ export default function Admin() {
               <div className="flex flex-col gap-2">
                 <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Срок стройки</label>
                 <input type="text" value={currentProject.time} onChange={e => updateField('time', e.target.value)} className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none" placeholder="Например: 3-4 месяца" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Размер дома</label>
+                <input type="text" value={currentProject.houseSize || ''} onChange={e => updateField('houseSize', e.target.value)} className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none" placeholder="Например: 5.5x7 м" />
+              </div>
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300">Санузлов</label>
+                <input type="text" value={currentProject.bathrooms || ''} onChange={e => updateField('bathrooms', e.target.value)} className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none" placeholder="Например: 1" />
               </div>
             </div>
           )}

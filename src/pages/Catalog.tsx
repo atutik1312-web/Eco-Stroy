@@ -97,19 +97,31 @@ export default function Catalog() {
                 <div className="grid grid-cols-2 gap-y-3 gap-x-4 text-sm">
                   <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
                     <span className="material-symbols-outlined text-[18px] text-primary">square_foot</span>
-                    <span>{project.area}</span>
+                    <span className="truncate">{project.area}</span>
                   </div>
+                  {project.houseSize && (
+                    <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                      <span className="material-symbols-outlined text-[18px] text-primary">straighten</span>
+                      <span className="truncate">{project.houseSize}</span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
                     <span className="material-symbols-outlined text-[18px] text-primary">layers</span>
-                    <span>{project.floors}</span>
+                    <span className="truncate">{project.floors}</span>
                   </div>
                   <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
                     <span className="material-symbols-outlined text-[18px] text-primary">bed</span>
-                    <span>{project.bedrooms}</span>
+                    <span className="truncate">{project.bedrooms}</span>
                   </div>
+                  {project.bathrooms && (
+                    <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
+                      <span className="material-symbols-outlined text-[18px] text-primary">bathtub</span>
+                      <span className="truncate">{project.bathrooms}</span>
+                    </div>
+                  )}
                   <div className="flex items-center gap-2 text-slate-600 dark:text-slate-400">
                     <span className="material-symbols-outlined text-[18px] text-primary">calendar_month</span>
-                    <span>{project.time}</span>
+                    <span className="truncate">{project.time}</span>
                   </div>
                 </div>
                 <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
