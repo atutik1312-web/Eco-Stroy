@@ -358,7 +358,7 @@ export default function Admin() {
                 onClick={() => setAdminTab('projects')}
                 className={`pb-2 text-sm font-medium transition-colors relative ${adminTab === 'projects' ? 'text-primary' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
               >
-                Проекты
+                Проекты домов
                 {adminTab === 'projects' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
               </button>
               <button 

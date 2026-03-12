@@ -24,7 +24,7 @@ export default function Header() {
       </Link>
       <div className="hidden md:flex flex-1 justify-end gap-8 items-center">
         <nav className="flex items-center gap-9">
-          <Link to="/catalog" onClick={handleLinkClick} className={`${isActive('/catalog')} transition-colors text-sm font-medium leading-normal`}>Проекты</Link>
+          <Link to="/catalog" onClick={handleLinkClick} className={`${isActive('/catalog')} transition-colors text-sm font-medium leading-normal`}>Проекты домов</Link>
           <Link to="/baths" onClick={handleLinkClick} className={`${isActive('/baths')} transition-colors text-sm font-medium leading-normal`}>Бани</Link>
           <Link to="/portfolio" onClick={handleLinkClick} className={`${isActive('/portfolio')} transition-colors text-sm font-medium leading-normal`}>Портфолио</Link>
           <Link to="/calculator" onClick={handleLinkClick} className={`${isActive('/calculator')} transition-colors text-sm font-medium leading-normal`}>Калькулятор</Link>
@@ -44,7 +44,7 @@ export default function Header() {
       {isMobileMenuOpen && (
         <div className="absolute top-full left-0 w-full bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800 shadow-lg flex flex-col p-4 gap-4 md:hidden">
           <nav className="flex flex-col gap-4">
-            <Link to="/catalog" onClick={handleLinkClick} className={`${isActive('/catalog')} transition-colors text-base font-medium`}>Проекты</Link>
+            <Link to="/catalog" onClick={handleLinkClick} className={`${isActive('/catalog')} transition-colors text-base font-medium`}>Проекты домов</Link>
             <Link to="/baths" onClick={handleLinkClick} className={`${isActive('/baths')} transition-colors text-base font-medium`}>Бани</Link>
             <Link to="/portfolio" onClick={handleLinkClick} className={`${isActive('/portfolio')} transition-colors text-base font-medium`}>Портфолио</Link>
             <Link to="/calculator" onClick={handleLinkClick} className={`${isActive('/calculator')} transition-colors text-base font-medium`}>Калькулятор</Link>
