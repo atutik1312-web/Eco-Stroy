@@ -6,9 +6,9 @@ import { useProjects } from '../context/ProjectContext';
 import { sendTelegramNotification } from '../lib/telegram';
 import { sendEmailNotification } from '../lib/email';
 
-export default function ProjectDetails() {
+export default function BathDetails() {
   const { id } = useParams();
-  const { projects, loading } = useProjects();
+  const { baths, loading } = useProjects();
   const [isGalleryOpen, setIsGalleryOpen] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [galleryImages, setGalleryImages] = useState<string[]>([]);
@@ -24,22 +24,17 @@ export default function ProjectDetails() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [id]);
 
-  // Find the project by id or fallback to the first one
-  const project = projects.find(p => p.id === id) || projects[0];
+  // Find the bath by id or fallback to the first one
+  const bath = baths.find(b => b.id === id) || baths[0];
 
-  if (!project) {
-    return <div className="p-20 text-center">Проект не найден</div>;
+  if (!bath) {
+    return <div className="p-20 text-center">Проект бани не найден</div>;
   }
 
-  const configurations = project.configurations || [];
-
   // All images for the gallery
-  const allImages = [project.image, ...(project.gallery || [])]
+  const allImages = [bath.image, ...(bath.gallery || [])]
     .filter(Boolean)
     .filter((img, index, self) => self.indexOf(img) === index);
-
-  const numFloors = parseInt(project.floors) || 1;
-  const floorPlans = (project.floorPlans || []).filter(Boolean);
 
   const openGallery = (images: string[], index: number) => {
     setGalleryImages(images);
@@ -84,9 +79,9 @@ export default function ProjectDetails() {
       await addDoc(collection(db, 'orders'), {
         name: formData.name,
         phone: formData.phone,
-        projectId: project.id,
-        projectTitle: project.title,
-        source: 'project_details',
+        projectId: bath.id,
+        projectTitle: bath.title,
+        source: 'bath_details',
         status: 'new',
         createdAt: Date.now()
       });
@@ -94,15 +89,15 @@ export default function ProjectDetails() {
       await sendTelegramNotification({
         name: formData.name,
         phone: formData.phone,
-        projectTitle: project.title,
-        source: 'project_details'
+        projectTitle: bath.title,
+        source: 'bath_details'
       });
 
       await sendEmailNotification({
         name: formData.name,
         phone: formData.phone,
-        projectTitle: project.title,
-        source: 'project_details'
+        projectTitle: bath.title,
+        source: 'bath_details'
       });
 
       setIsSuccess(true);
@@ -134,9 +129,9 @@ export default function ProjectDetails() {
         <nav className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
           <Link to="/" className="hover:text-primary transition-colors">Главная</Link>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          <Link to="/catalog" className="hover:text-primary transition-colors">Каталог проектов</Link>
+          <Link to="/baths" className="hover:text-primary transition-colors">Бани</Link>
           <span className="material-symbols-outlined text-[16px]">chevron_right</span>
-          <span className="text-slate-900 dark:text-white font-medium">{project.title}</span>
+          <span className="text-slate-900 dark:text-white font-medium">{bath.title}</span>
         </nav>
 
         {/* Hero Section */}
@@ -146,7 +141,7 @@ export default function ProjectDetails() {
               className="aspect-[4/3] w-full rounded-2xl overflow-hidden relative cursor-pointer group"
               onClick={() => openGallery(allImages, 0)}
             >
-              <div className="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" style={{ backgroundImage: `url('${project.image}')` }}></div>
+              <div className="w-full h-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" style={{ backgroundImage: `url('${bath.image}')` }}></div>
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
                 <span className="material-symbols-outlined text-white opacity-0 group-hover:opacity-100 transition-opacity text-5xl drop-shadow-lg">zoom_in</span>
               </div>
@@ -169,68 +164,97 @@ export default function ProjectDetails() {
 
           <div className="flex flex-col gap-8">
             <div>
-              <p className="text-primary font-bold text-sm uppercase tracking-wider mb-2">{project.series}</p>
-              <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">{project.title}</h1>
-              <p className="text-3xl font-black text-slate-900 dark:text-white mb-6">От {formatPrice(project.price)}</p>
-              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">{project.description}</p>
+              <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">{bath.title}</h1>
+              <p className="text-3xl font-black text-slate-900 dark:text-white mb-6">От {formatPrice(bath.price)}</p>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed whitespace-pre-wrap">{bath.description}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-y-6 gap-x-4 p-6 bg-slate-50 dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800">
-              <div className="flex items-center gap-3">
-                <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  <span className="material-symbols-outlined">square_foot</span>
+              {bath.area && (
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <span className="material-symbols-outlined">square_foot</span>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Общая площадь</p>
+                    <p className="font-bold text-slate-900 dark:text-white">{bath.area}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-slate-500">Площадь</p>
-                  <p className="font-bold text-slate-900 dark:text-white">{project.area}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  <span className="material-symbols-outlined">layers</span>
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500">Этажность</p>
-                  <p className="font-bold text-slate-900 dark:text-white">{project.floors}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  <span className="material-symbols-outlined">bed</span>
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500">Спальни</p>
-                  <p className="font-bold text-slate-900 dark:text-white">{project.bedrooms}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                  <span className="material-symbols-outlined">calendar_month</span>
-                </div>
-                <div>
-                  <p className="text-xs text-slate-500">Срок стройки</p>
-                  <p className="font-bold text-slate-900 dark:text-white">{project.time}</p>
-                </div>
-              </div>
-              {project.houseSize && (
+              )}
+              {bath.size && (
                 <div className="flex items-center gap-3">
                   <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                     <span className="material-symbols-outlined">straighten</span>
                   </div>
                   <div>
                     <p className="text-xs text-slate-500">Размер дома</p>
-                    <p className="font-bold text-slate-900 dark:text-white">{project.houseSize}</p>
+                    <p className="font-bold text-slate-900 dark:text-white">{bath.size}</p>
                   </div>
                 </div>
               )}
-              {project.bathrooms && (
+              {bath.steamRoom && (
                 <div className="flex items-center gap-3">
                   <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                    <span className="material-symbols-outlined">bathtub</span>
+                    <span className="material-symbols-outlined">hot_tub</span>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-500">Санузлов</p>
-                    <p className="font-bold text-slate-900 dark:text-white">{project.bathrooms}</p>
+                    <p className="text-xs text-slate-500">Парная</p>
+                    <p className="font-bold text-slate-900 dark:text-white">{bath.steamRoom}</p>
+                  </div>
+                </div>
+              )}
+              {bath.showerRoom && (
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <span className="material-symbols-outlined">shower</span>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Душевая</p>
+                    <p className="font-bold text-slate-900 dark:text-white">{bath.showerRoom}</p>
+                  </div>
+                </div>
+              )}
+              {bath.bathroom && (
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <span className="material-symbols-outlined">wc</span>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Санузел</p>
+                    <p className="font-bold text-slate-900 dark:text-white">{bath.bathroom}</p>
+                  </div>
+                </div>
+              )}
+              {bath.guestRoom && (
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <span className="material-symbols-outlined">living</span>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Гостевая</p>
+                    <p className="font-bold text-slate-900 dark:text-white">{bath.guestRoom}</p>
+                  </div>
+                </div>
+              )}
+              {bath.terrace && (
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <span className="material-symbols-outlined">deck</span>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Терраса</p>
+                    <p className="font-bold text-slate-900 dark:text-white">{bath.terrace}</p>
+                  </div>
+                </div>
+              )}
+              {bath.time && (
+                <div className="flex items-center gap-3">
+                  <div className="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                    <span className="material-symbols-outlined">calendar_month</span>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">Срок стройки</p>
+                    <p className="font-bold text-slate-900 dark:text-white">{bath.time}</p>
                   </div>
                 </div>
               )}
@@ -241,92 +265,41 @@ export default function ProjectDetails() {
                 onClick={() => setIsModalOpen(true)}
                 className="h-14 px-10 rounded-lg bg-primary hover:bg-green-500 text-slate-900 font-bold text-lg transition-colors shadow-lg shadow-primary/20"
               >
-                Заказать проект
+                Заказать баню
               </button>
             </div>
           </div>
         </div>
 
-        {/* Floor Plans */}
-        {floorPlans.length > 0 && (
+        {/* Floor Plan */}
+        {bath.floorPlan && (
           <div className="mt-10">
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-8">Планировка</h2>
-            <div className={`grid grid-cols-1 ${floorPlans.length > 1 ? 'md:grid-cols-2' : ''} gap-8`}>
-              {floorPlans.map((plan, index) => (
-                <div key={index} className="flex flex-col gap-4">
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white text-center">
-                    {index === 0 ? '1-й этаж' : '2-й этаж'}
-                  </h3>
-                  <div 
-                    className="aspect-[4/3] w-full rounded-2xl overflow-hidden relative cursor-pointer group border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4"
-                    onClick={() => openGallery(floorPlans, index)}
-                  >
-                    <div className="w-full h-full bg-contain bg-no-repeat bg-center transition-transform duration-500 group-hover:scale-105" style={{ backgroundImage: `url('${plan}')` }}></div>
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                      <span className="material-symbols-outlined text-slate-900 dark:text-white opacity-0 group-hover:opacity-100 transition-opacity text-5xl drop-shadow-lg">zoom_in</span>
-                    </div>
-                  </div>
+            <div className="flex flex-col gap-4">
+              <div 
+                className="aspect-[4/3] w-full max-w-3xl mx-auto rounded-2xl overflow-hidden relative cursor-pointer group border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4"
+                onClick={() => openGallery([bath.floorPlan!], 0)}
+              >
+                <div className="w-full h-full bg-contain bg-no-repeat bg-center transition-transform duration-500 group-hover:scale-105" style={{ backgroundImage: `url('${bath.floorPlan}')` }}></div>
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                  <span className="material-symbols-outlined text-slate-900 dark:text-white opacity-0 group-hover:opacity-100 transition-opacity text-5xl drop-shadow-lg">zoom_in</span>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         )}
 
-        {/* Configurations Table */}
-        <div className="mt-16">
-          <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-8">Комплектации и цены</h2>
-          <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
-            <table className="w-full text-left border-collapse min-w-[800px]">
-              <thead>
-                <tr className="bg-primary text-slate-900">
-                  <th className="p-4 font-bold text-lg border-b border-r border-black/10 w-1/3">Цена</th>
-                  <th className="p-4 font-bold text-lg border-b border-r border-black/10 text-center">{formatPrice(project.priceWarm || project.price)}</th>
-                  <th className="p-4 font-bold text-lg border-b border-black/10 text-center">{formatPrice(project.priceTurnkey || Math.round(project.price * 1.3))}</th>
-                </tr>
-                <tr className="bg-slate-50 dark:bg-slate-900">
-                  <th className="p-4 font-bold text-slate-900 dark:text-white border-b border-r border-slate-200 dark:border-slate-800">Параметр</th>
-                  <th className="p-4 font-bold text-slate-900 dark:text-white border-b border-r border-slate-200 dark:border-slate-800 text-center">Теплый контур</th>
-                  <th className="p-4 font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 text-center">Под ключ</th>
-                </tr>
-              </thead>
-              <tbody className="bg-white dark:bg-slate-950">
-                {configurations.map((section, sIdx) => (
-                  <React.Fragment key={sIdx}>
-                    <tr className="bg-slate-50 dark:bg-slate-900">
-                      <th colSpan={3} className="p-4 font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800">{section.title}</th>
-                    </tr>
-                    {section.rows.map((row, i) => (
-                      <tr key={`${sIdx}-${i}`} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-colors">
-                        <td className="p-4 text-sm text-slate-700 dark:text-slate-300 border-r border-slate-100 dark:border-slate-800">{row.name}</td>
-                        <td className="p-4 text-center border-r border-slate-100 dark:border-slate-800">
-                          {row.v1 ? <span className="material-symbols-outlined text-primary">check</span> : <span className="text-slate-300 dark:text-slate-700">—</span>}
-                        </td>
-                        <td className="p-4 text-center">
-                          {row.v2 ? <span className="material-symbols-outlined text-primary">check</span> : <span className="text-slate-300 dark:text-slate-700">—</span>}
-                        </td>
-                      </tr>
-                    ))}
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
+        {/* Equipment */}
+        {bath.equipment && (
+          <div className="mt-10">
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-8">Комплектация</h2>
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 md:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+              <p className="text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
+                {bath.equipment}
+              </p>
+            </div>
           </div>
-          
-          <div className="mt-4 text-xs text-slate-500 dark:text-slate-400 flex flex-col gap-1">
-            <p>* обязательным условием для получения гарантии 15 лет - оплата полного атисептирования каркаса</p>
-            <p>** количество камер стеклопакета, зависит от геометрии и параметров изделий ПВХ</p>
-            <p>*** холодное чердачное помещение</p>
-          </div>
-          
-          <div className="mt-10 flex justify-center">
-            <button 
-              onClick={() => setIsModalOpen(true)}
-              className="h-14 px-10 rounded-lg bg-primary hover:bg-green-500 text-slate-900 font-bold text-lg transition-colors shadow-lg shadow-primary/20"
-            >
-              Заказать проект
-            </button>
-          </div>
-        </div>
+        )}
 
         {/* Lightbox / Gallery */}
         {isGalleryOpen && (
@@ -338,30 +311,36 @@ export default function ProjectDetails() {
               <span className="material-symbols-outlined text-4xl">close</span>
             </button>
             
-            <button 
-              className="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors z-50 p-4"
-              onClick={prevImage}
-            >
-              <span className="material-symbols-outlined text-5xl drop-shadow-lg">chevron_left</span>
-            </button>
+            {galleryImages.length > 1 && (
+              <button 
+                className="absolute left-4 md:left-10 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors z-50 p-4"
+                onClick={prevImage}
+              >
+                <span className="material-symbols-outlined text-5xl drop-shadow-lg">chevron_left</span>
+              </button>
+            )}
 
             <div className="relative w-full max-w-6xl max-h-[90vh] px-16 md:px-24 flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
               <img 
                 src={galleryImages[currentImageIndex]} 
-                alt={`${project.title} - Фото ${currentImageIndex + 1}`} 
+                alt={`${bath.title} - Фото ${currentImageIndex + 1}`} 
                 className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl"
               />
-              <div className="absolute bottom-[-40px] left-1/2 -translate-x-1/2 text-white/70 text-sm font-medium">
-                {currentImageIndex + 1} / {galleryImages.length}
-              </div>
+              {galleryImages.length > 1 && (
+                <div className="absolute bottom-[-40px] left-1/2 -translate-x-1/2 text-white/70 text-sm font-medium">
+                  {currentImageIndex + 1} / {galleryImages.length}
+                </div>
+              )}
             </div>
 
-            <button 
-              className="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors z-50 p-4"
-              onClick={nextImage}
-            >
-              <span className="material-symbols-outlined text-5xl drop-shadow-lg">chevron_right</span>
-            </button>
+            {galleryImages.length > 1 && (
+              <button 
+                className="absolute right-4 md:right-10 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors z-50 p-4"
+                onClick={nextImage}
+              >
+                <span className="material-symbols-outlined text-5xl drop-shadow-lg">chevron_right</span>
+              </button>
+            )}
           </div>
         )}
 
@@ -376,7 +355,7 @@ export default function ProjectDetails() {
                 <div className="flex justify-between items-start mb-6">
                   <div>
                     <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-1">Заявка на расчет</h3>
-                    <p className="text-slate-500 dark:text-slate-400 text-sm">Проект: {project.title}</p>
+                    <p className="text-slate-500 dark:text-slate-400 text-sm">Проект: {bath.title}</p>
                   </div>
                   <button 
                     onClick={() => setIsModalOpen(false)}

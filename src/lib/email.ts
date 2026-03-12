@@ -11,6 +11,7 @@ export const sendEmailNotification = async (data: NotificationData) => {
   if (data.source === 'contacts_page') sourceText = 'Страница контактов';
   if (data.source === 'calculator') sourceText = 'Калькулятор';
   if (data.source === 'project_details') sourceText = `Проект: ${data.projectTitle || 'Неизвестно'}`;
+  if (data.source === 'bath_details') sourceText = `Баня: ${data.projectTitle || 'Неизвестно'}`;
 
   const templateParams = {
     source: sourceText,

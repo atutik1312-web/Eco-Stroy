@@ -2,20 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { collection, query, orderBy, onSnapshot, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useProjects, DEFAULT_CONFIGS } from '../context/ProjectContext';
-import { Project, PortfolioProject } from '../types/project';
+import { Project, PortfolioProject, BathProject } from '../types/project';
 import { Order } from '../types/order';
 
 export default function Admin() {
-  const { projects, portfolioProjects, loading, addProject, updateProject, deleteProject, addPortfolioProject, updatePortfolioProject, deletePortfolioProject } = useProjects();
-  const [view, setView] = useState<'list' | 'edit' | 'edit_portfolio'>('list');
-  const [adminTab, setAdminTab] = useState<'projects' | 'portfolio' | 'orders'>('projects');
+  const { projects, portfolioProjects, baths, loading, addProject, updateProject, deleteProject, addPortfolioProject, updatePortfolioProject, deletePortfolioProject, addBath, updateBath, deleteBath } = useProjects();
+  const [view, setView] = useState<'list' | 'edit' | 'edit_portfolio' | 'edit_bath'>('list');
+  const [adminTab, setAdminTab] = useState<'projects' | 'portfolio' | 'baths' | 'orders'>('projects');
   const [orders, setOrders] = useState<Order[]>([]);
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
   const [currentPortfolioProject, setCurrentPortfolioProject] = useState<PortfolioProject | null>(null);
+  const [currentBathProject, setCurrentBathProject] = useState<BathProject | null>(null);
   const [activeTab, setActiveTab] = useState<'basic' | 'characteristics' | 'media' | 'config'>('basic');
   const [toast, setToast] = useState<{msg: string, type: 'success' | 'error'} | null>(null);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
   const [portfolioToDelete, setPortfolioToDelete] = useState<string | null>(null);
+  const [bathToDelete, setBathToDelete] = useState<string | null>(null);
 
   const showNotification = (msg: string, type: 'success' | 'error' = 'success') => {
     setToast({ msg, type });
@@ -100,6 +102,75 @@ export default function Admin() {
     setPortfolioToDelete(id);
   };
 
+  const handleCreateNewBath = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const newBath: BathProject = {
+      id: `bath-${Date.now()}`,
+      title: 'Новая баня',
+      price: 0,
+      description: '',
+      area: '',
+      size: '',
+      showerRoom: '',
+      steamRoom: '',
+      bathroom: '',
+      guestRoom: '',
+      terrace: '',
+      equipment: '',
+      time: '',
+      image: '',
+      gallery: Array(4).fill(''),
+      floorPlan: ''
+    };
+    setCurrentBathProject(newBath);
+    setView('edit_bath');
+    setActiveTab('basic');
+  };
+
+  const handleEditBath = (bath: BathProject) => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    const bathCopy = JSON.parse(JSON.stringify(bath));
+    if (!bathCopy.gallery) bathCopy.gallery = Array(4).fill('');
+    setCurrentBathProject(bathCopy);
+    setView('edit_bath');
+    setActiveTab('basic');
+  };
+
+  const handleDeleteBath = (id: string) => {
+    setBathToDelete(id);
+  };
+
+  const handleSaveBath = () => {
+    if (currentBathProject) {
+      if (!currentBathProject.image && (!currentBathProject.gallery || !currentBathProject.gallery[0])) {
+        showNotification('Укажите ссылку на обложку бани (Фото 1)', 'error');
+        setActiveTab('media');
+        return;
+      }
+
+      const exists = baths.some(b => b.id === currentBathProject.id);
+      if (exists) {
+        updateBath(currentBathProject.id, currentBathProject);
+      } else {
+        addBath(currentBathProject);
+      }
+      showNotification('Проект бани успешно сохранен!');
+    }
+  };
+
+  const updateBathField = (field: keyof BathProject, value: any) => {
+    if (currentBathProject) {
+      setCurrentBathProject({ ...currentBathProject, [field]: value });
+    }
+  };
+
+  const updateBathGallery = (index: number, value: string) => {
+    if (!currentBathProject) return;
+    const newGallery = [...(currentBathProject.gallery || Array(4).fill(''))];
+    newGallery[index] = value;
+    setCurrentBathProject({ ...currentBathProject, gallery: newGallery });
+  };
+
   const handleSavePortfolio = () => {
     if (currentPortfolioProject) {
       const validImages = currentPortfolioProject.images?.filter(img => img && img.trim() !== '') || [];
@@ -166,7 +237,7 @@ export default function Admin() {
     if (!currentProject) return;
     const newGallery = [...(currentProject.gallery || Array(5).fill(''))];
     newGallery[index] = value;
-    setCurrentProject({ ...currentProject, gallery: newGallery, image: newGallery[0] || currentProject.image });
+    setCurrentProject({ ...currentProject, gallery: newGallery });
   };
 
   const updateFloorPlan = (index: number, value: string) => {
@@ -291,6 +362,13 @@ export default function Admin() {
                 {adminTab === 'projects' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
               </button>
               <button 
+                onClick={() => setAdminTab('baths')}
+                className={`pb-2 text-sm font-medium transition-colors relative ${adminTab === 'baths' ? 'text-primary' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+              >
+                Бани
+                {adminTab === 'baths' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-primary rounded-t-full"></div>}
+              </button>
+              <button 
                 onClick={() => setAdminTab('portfolio')}
                 className={`pb-2 text-sm font-medium transition-colors relative ${adminTab === 'portfolio' ? 'text-primary' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
               >
@@ -334,6 +412,14 @@ export default function Admin() {
               <button onClick={handleCreateNewPortfolio} className="px-4 md:px-6 py-2 bg-primary hover:bg-green-500 transition-colors text-slate-900 font-bold rounded-lg flex items-center gap-2 shadow-lg shadow-primary/20">
                 <span className="material-symbols-outlined">add</span>
                 <span className="hidden sm:inline">Добавить в портфолио</span>
+              </button>
+            </div>
+          )}
+          {adminTab === 'baths' && (
+            <div className="flex items-center gap-2 md:gap-3">
+              <button onClick={handleCreateNewBath} className="px-4 md:px-6 py-2 bg-primary hover:bg-green-500 transition-colors text-slate-900 font-bold rounded-lg flex items-center gap-2 shadow-lg shadow-primary/20">
+                <span className="material-symbols-outlined">add</span>
+                <span className="hidden sm:inline">Добавить баню</span>
               </button>
             </div>
           )}
@@ -434,6 +520,55 @@ export default function Admin() {
           </div>
         )}
 
+        {adminTab === 'baths' && (
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden overflow-x-auto">
+            <table className="w-full text-left min-w-[800px]">
+              <thead>
+                <tr className="bg-slate-50 dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
+                  <th className="p-4 w-12 text-slate-500 font-medium">#</th>
+                  <th className="p-4 w-24 text-slate-500 font-medium">Фото</th>
+                  <th className="p-4 text-slate-500 font-medium">Название</th>
+                  <th className="p-4 text-slate-500 font-medium">Цена</th>
+                  <th className="p-4 text-right text-slate-500 font-medium">Действия</th>
+                </tr>
+              </thead>
+              <tbody>
+                {baths.map((bath, index) => (
+                  <tr key={bath.id} className="border-b border-slate-100 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <td className="p-4 text-slate-500">{index + 1}</td>
+                    <td className="p-4">
+                      <div className="w-16 h-12 rounded bg-slate-100 dark:bg-slate-800 bg-cover bg-center border border-slate-200 dark:border-slate-700 flex items-center justify-center" style={bath.image ? { backgroundImage: `url(${bath.image})` } : {}}>
+                        {!bath.image && <span className="material-symbols-outlined text-slate-400 text-sm">image</span>}
+                      </div>
+                    </td>
+                    <td className="p-4 font-medium text-slate-900 dark:text-white">
+                      {bath.title}
+                    </td>
+                    <td className="p-4 font-medium text-slate-900 dark:text-white">{new Intl.NumberFormat('ru-RU').format(bath.price)} ₽</td>
+                    <td className="p-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button onClick={() => handleEditBath(bath)} className="p-2 text-slate-400 hover:text-primary transition-colors" title="Редактировать">
+                          <span className="material-symbols-outlined">edit</span>
+                        </button>
+                        <button onClick={() => handleDeleteBath(bath.id)} className="p-2 text-slate-400 hover:text-red-500 transition-colors" title="Удалить">
+                          <span className="material-symbols-outlined">delete</span>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {baths.length === 0 && (
+                  <tr>
+                    <td colSpan={5} className="p-8 text-center text-slate-500 dark:text-slate-400">
+                      Проекты бань не найдены. Нажмите "Добавить баню", чтобы создать первый проект.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
         {adminTab === 'orders' && (
           <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden overflow-x-auto">
             <table className="w-full text-left min-w-[800px]">
@@ -465,9 +600,11 @@ export default function Admin() {
                     </td>
                     <td className="p-4 font-medium text-slate-900 dark:text-white align-top">{order.phone}</td>
                     <td className="p-4 text-slate-600 dark:text-slate-400 align-top max-w-xs">
-                      {order.source === 'project_details' && order.projectTitle && (
+                      {(order.source === 'project_details' || order.source === 'bath_details') && order.projectTitle && (
                         <span className="flex items-center gap-1 font-medium text-slate-900 dark:text-white">
-                          <span className="material-symbols-outlined text-[16px] text-primary">home</span>
+                          <span className="material-symbols-outlined text-[16px] text-primary">
+                            {order.source === 'bath_details' ? 'hot_tub' : 'home'}
+                          </span>
                           {order.projectTitle}
                         </span>
                       )}
@@ -551,6 +688,182 @@ export default function Admin() {
             </div>
           </div>
         )}
+
+        {bathToDelete && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+            <div className="bg-white dark:bg-slate-900 w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden p-6">
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Удалить проект бани?</h3>
+              <p className="text-slate-500 dark:text-slate-400 mb-6">Это действие нельзя будет отменить.</p>
+              <div className="flex justify-end gap-3">
+                <button onClick={() => setBathToDelete(null)} className="px-4 py-2 rounded-lg font-medium text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">Отмена</button>
+                <button onClick={() => { 
+                  deleteBath(bathToDelete); 
+                  setBathToDelete(null); 
+                  showNotification('Проект бани успешно удален!');
+                }} className="px-4 py-2 rounded-lg font-bold bg-red-500 hover:bg-red-600 text-white transition-colors">Удалить</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {toast && (
+          <div className={`fixed bottom-8 right-8 text-white px-6 py-4 rounded-xl flex items-center gap-3 z-[100] shadow-2xl animate-fade-in-up ${toast.type === 'error' ? 'bg-red-600' : 'bg-slate-900'}`}>
+            <span className={`material-symbols-outlined ${toast.type === 'error' ? 'text-white' : 'text-green-400'}`}>
+              {toast.type === 'error' ? 'error' : 'check_circle'}
+            </span>
+            <span className="font-bold">{toast.msg}</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  if (view === 'edit_bath' && currentBathProject) {
+    return (
+      <div className="p-4 md:p-10 max-w-7xl mx-auto min-h-screen">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+          <div className="flex items-center gap-4">
+            <button onClick={() => setView('list')} className="p-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-full transition-colors text-slate-600 dark:text-slate-300">
+              <span className="material-symbols-outlined">arrow_back</span>
+            </button>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Редактирование бани</h1>
+          </div>
+          <button onClick={handleSaveBath} className="px-6 py-2 bg-primary hover:bg-green-500 transition-colors text-slate-900 font-bold rounded-lg shadow-lg shadow-primary/20">
+            Сохранить баню
+          </button>
+        </div>
+
+        <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+          <div className="flex border-b border-slate-200 dark:border-slate-800 overflow-x-auto">
+            <button onClick={() => setActiveTab('basic')} className={`px-6 py-4 font-medium whitespace-nowrap transition-colors border-b-2 ${activeTab === 'basic' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}>Основная информация</button>
+            <button onClick={() => setActiveTab('characteristics')} className={`px-6 py-4 font-medium whitespace-nowrap transition-colors border-b-2 ${activeTab === 'characteristics' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}>Характеристики</button>
+            <button onClick={() => setActiveTab('media')} className={`px-6 py-4 font-medium whitespace-nowrap transition-colors border-b-2 ${activeTab === 'media' ? 'border-primary text-primary' : 'border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}>Медиа (Фото)</button>
+          </div>
+
+          <div className="p-6 md:p-8">
+            {activeTab === 'basic' && (
+              <div className="space-y-6 max-w-3xl">
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Название проекта *</label>
+                  <input type="text" value={currentBathProject.title} onChange={(e) => updateBathField('title', e.target.value)} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" placeholder="Например: Баня 3х5" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Базовая цена (₽) *</label>
+                  <input type="number" value={currentBathProject.price} onChange={(e) => updateBathField('price', Number(e.target.value))} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" placeholder="Например: 500000" />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Описание проекта *</label>
+                  <textarea value={currentBathProject.description} onChange={(e) => updateBathField('description', e.target.value)} rows={6} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" placeholder="Подробное описание бани..."></textarea>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'characteristics' && (
+              <div className="space-y-8 max-w-3xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Общая площадь</label>
+                    <input type="text" value={currentBathProject.area || ''} onChange={(e) => updateBathField('area', e.target.value)} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" placeholder="Например: 15 м²" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Размер дома</label>
+                    <input type="text" value={currentBathProject.size || ''} onChange={(e) => updateBathField('size', e.target.value)} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" placeholder="Например: 3x5 м" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Душевая</label>
+                    <input type="text" value={currentBathProject.showerRoom || ''} onChange={(e) => updateBathField('showerRoom', e.target.value)} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" placeholder="Например: 2x1.5 м" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Парная</label>
+                    <input type="text" value={currentBathProject.steamRoom || ''} onChange={(e) => updateBathField('steamRoom', e.target.value)} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" placeholder="Например: 2x2 м" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Санузел</label>
+                    <input type="text" value={currentBathProject.bathroom || ''} onChange={(e) => updateBathField('bathroom', e.target.value)} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" placeholder="Например: 1.5x1.5 м" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Гостевая</label>
+                    <input type="text" value={currentBathProject.guestRoom || ''} onChange={(e) => updateBathField('guestRoom', e.target.value)} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" placeholder="Например: 3x3 м" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Терраса</label>
+                    <input type="text" value={currentBathProject.terrace || ''} onChange={(e) => updateBathField('terrace', e.target.value)} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" placeholder="Например: 2x5 м" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Срок стройки</label>
+                    <input type="text" value={currentBathProject.time || ''} onChange={(e) => updateBathField('time', e.target.value)} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" placeholder="Например: 14 дней" />
+                  </div>
+                </div>
+                
+                <div className="pt-6 border-t border-slate-200 dark:border-slate-800">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Комплектация</h3>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Описание комплектации</label>
+                  <textarea value={currentBathProject.equipment || ''} onChange={(e) => updateBathField('equipment', e.target.value)} rows={8} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" placeholder="Опишите, что входит в базовую комплектацию бани..."></textarea>
+                </div>
+              </div>
+            )}
+
+            {activeTab === 'media' && (
+              <div className="space-y-8 max-w-3xl">
+                <div>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Основное фото (Обложка) *</h3>
+                  <div className="flex gap-4 items-start">
+                    <div className="w-32 h-32 rounded-xl bg-slate-100 dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center overflow-hidden shrink-0">
+                      {currentBathProject.image ? (
+                        <img src={currentBathProject.image} alt="Cover" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="material-symbols-outlined text-slate-400 text-3xl">add_photo_alternate</span>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">URL изображения</label>
+                      <input type="text" value={currentBathProject.image} onChange={(e) => updateBathField('image', e.target.value)} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" placeholder="https://..." />
+                      <p className="text-xs text-slate-500 mt-2">Вставьте прямую ссылку на изображение. Рекомендуемый размер: 1200x800px.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-slate-200 dark:border-slate-800">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Галерея проекта</h3>
+                  <div className="space-y-4">
+                    {(currentBathProject.gallery || Array(4).fill('')).map((img, index) => (
+                      <div key={`gallery-${index}`} className="flex gap-4 items-start">
+                        <div className="w-20 h-20 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center overflow-hidden shrink-0">
+                          {img ? (
+                            <img src={img} alt={`Gallery ${index + 1}`} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="material-symbols-outlined text-slate-400">image</span>
+                          )}
+                        </div>
+                        <div className="flex-1">
+                          <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Фото {index + 1}</label>
+                          <input type="text" value={img} onChange={(e) => updateBathGallery(index, e.target.value)} className="w-full px-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" placeholder="https://..." />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="pt-6 border-t border-slate-200 dark:border-slate-800">
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Планировка</h3>
+                  <div className="flex gap-4 items-start">
+                    <div className="w-32 h-32 rounded-xl bg-slate-100 dark:bg-slate-800 border-2 border-dashed border-slate-300 dark:border-slate-700 flex items-center justify-center overflow-hidden shrink-0">
+                      {currentBathProject.floorPlan ? (
+                        <img src={currentBathProject.floorPlan} alt="Floor Plan" className="w-full h-full object-contain p-2" />
+                      ) : (
+                        <span className="material-symbols-outlined text-slate-400 text-3xl">architecture</span>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">URL изображения планировки</label>
+                      <input type="text" value={currentBathProject.floorPlan || ''} onChange={(e) => updateBathField('floorPlan', e.target.value)} className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary/50 text-slate-900 dark:text-white" placeholder="https://..." />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
 
         {toast && (
           <div className={`fixed bottom-8 right-8 text-white px-6 py-4 rounded-xl flex items-center gap-3 z-[100] shadow-2xl animate-fade-in-up ${toast.type === 'error' ? 'bg-red-600' : 'bg-slate-900'}`}>

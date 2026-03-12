@@ -1,11 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../lib/firebase';
-import { Project, ConfigSection, PortfolioProject } from '../types/project';
+import { Project, ConfigSection, PortfolioProject, BathProject } from '../types/project';
 
 interface ProjectContextType {
   projects: Project[];
   portfolioProjects: PortfolioProject[];
+  baths: BathProject[];
   loading: boolean;
   addProject: (project: Project) => void;
   updateProject: (id: string, project: Project) => void;
@@ -13,6 +14,9 @@ interface ProjectContextType {
   addPortfolioProject: (project: PortfolioProject) => void;
   updatePortfolioProject: (id: string, project: PortfolioProject) => void;
   deletePortfolioProject: (id: string) => void;
+  addBath: (bath: BathProject) => void;
+  updateBath: (id: string, bath: BathProject) => void;
+  deleteBath: (id: string) => void;
 }
 
 const ProjectContext = createContext<ProjectContextType | undefined>(undefined);
@@ -128,13 +132,16 @@ export const DEFAULT_CONFIGS: ConfigSection[] = [
 export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [portfolioProjects, setPortfolioProjects] = useState<PortfolioProject[]>([]);
+  const [baths, setBaths] = useState<BathProject[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const projectsCol = collection(db, 'projects');
     const portfolioCol = collection(db, 'portfolio');
+    const bathsCol = collection(db, 'baths');
     let unsubscribeProjects: () => void;
     let unsubscribePortfolio: () => void;
+    let unsubscribeBaths: () => void;
 
     const initFirebase = async () => {
       try {
@@ -148,9 +155,16 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
         unsubscribePortfolio = onSnapshot(portfolioCol, (snapshot) => {
           const portfolioData = snapshot.docs.map(doc => doc.data() as PortfolioProject);
           setPortfolioProjects(portfolioData.reverse());
-          setLoading(false);
         }, (error) => {
           console.error("Error fetching portfolio:", error);
+        });
+
+        unsubscribeBaths = onSnapshot(bathsCol, (snapshot) => {
+          const bathsData = snapshot.docs.map(doc => doc.data() as BathProject);
+          setBaths(bathsData.reverse());
+          setLoading(false);
+        }, (error) => {
+          console.error("Error fetching baths:", error);
           setLoading(false);
         });
       } catch (error) {
@@ -164,6 +178,7 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return () => {
       if (unsubscribeProjects) unsubscribeProjects();
       if (unsubscribePortfolio) unsubscribePortfolio();
+      if (unsubscribeBaths) unsubscribeBaths();
     };
   }, []);
 
@@ -215,11 +230,36 @@ export const ProjectProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   };
 
+  const addBath = async (bath: BathProject) => {
+    try {
+      await setDoc(doc(db, 'baths', bath.id), bath);
+    } catch (error) {
+      console.error("Error adding bath:", error);
+    }
+  };
+
+  const updateBath = async (id: string, updated: BathProject) => {
+    try {
+      await updateDoc(doc(db, 'baths', id), updated as any);
+    } catch (error) {
+      console.error("Error updating bath:", error);
+    }
+  };
+
+  const deleteBath = async (id: string) => {
+    try {
+      await deleteDoc(doc(db, 'baths', id));
+    } catch (error) {
+      console.error("Error deleting bath:", error);
+    }
+  };
+
   return (
     <ProjectContext.Provider value={{ 
-      projects, portfolioProjects, loading, 
+      projects, portfolioProjects, baths, loading, 
       addProject, updateProject, deleteProject,
-      addPortfolioProject, updatePortfolioProject, deletePortfolioProject
+      addPortfolioProject, updatePortfolioProject, deletePortfolioProject,
+      addBath, updateBath, deleteBath
     }}>
       {children}
     </ProjectContext.Provider>

@@ -4,12 +4,14 @@ import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './pages/Home';
 import Catalog from './pages/Catalog';
+import CatalogBaths from './pages/CatalogBaths';
 import Portfolio from './pages/Portfolio';
 import Calculator from './pages/Calculator';
 import Technologies from './pages/Technologies';
 import About from './pages/About';
 import Contacts from './pages/Contacts';
 import ProjectDetails from './pages/ProjectDetails';
+import BathDetails from './pages/BathDetails';
 import Admin from './pages/Admin';
 
 export default function App() {
@@ -22,6 +24,8 @@ export default function App() {
             <Route path="/" element={<Home />} />
             <Route path="/catalog" element={<Catalog />} />
             <Route path="/catalog/:id" element={<ProjectDetails />} />
+            <Route path="/baths" element={<CatalogBaths />} />
+            <Route path="/baths/:id" element={<BathDetails />} />
             <Route path="/portfolio" element={<Portfolio />} />
             <Route path="/calculator" element={<Calculator />} />
             <Route path="/technologies" element={<Technologies />} />

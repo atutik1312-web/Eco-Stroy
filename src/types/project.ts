@@ -16,6 +16,25 @@ export interface PortfolioProject {
   images: string[];
 }
 
+export interface BathProject {
+  id: string;
+  title: string;
+  price: number;
+  description: string;
+  area?: string;
+  size?: string;
+  showerRoom?: string;
+  steamRoom?: string;
+  bathroom?: string;
+  guestRoom?: string;
+  terrace?: string;
+  equipment?: string;
+  time?: string;
+  image: string;
+  gallery?: string[];
+  floorPlan?: string;
+}
+
 export interface Project {
   id: string;
   title: string;
