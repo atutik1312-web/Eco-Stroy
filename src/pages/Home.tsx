@@ -128,55 +128,17 @@ export default function Home() {
             </div>
             <div className="group relative overflow-hidden rounded-xl bg-white dark:bg-[#152e15] shadow-sm hover:shadow-md transition-all border border-slate-100 dark:border-slate-800">
               <div className="aspect-[16/9] w-full overflow-hidden">
-                <div className="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuDlpzK6suxEoh1KUlD-yTrIz1bXrJG2Cs6K5IvGhLVEBXg3yCYK1piOAc3JGZJVKBHcexUWpqi4KJUGOmLyj2vNhPbgetDGFiBmkDjZMkXRJsR6L20W2BE80TLymKdbw9JWSOZURszGxJGFWuFHuVjjJOZl5DBMGlCSoQwkquI2z83z0s3i8Gy4dPpTdCPtJc_W8TZXixYJoC4Zpe_VepBFGsEPAOek1igLadrSX0H2n5BjCByVS4VLt80ETziAMEhNF80I5cGGMmw')" }}></div>
+                <div className="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" style={{ backgroundImage: "url('https://i.postimg.cc/7YZs7W3H/bsthhouse-13-1.jpg')" }}></div>
               </div>
               <div className="p-8">
                 <div className="flex items-center gap-2 mb-3 text-primary">
-                  <span className="material-symbols-outlined">wb_sunny</span>
-                  <span className="text-xs font-bold uppercase tracking-wider">Светло и просторно</span>
+                  <span className="material-symbols-outlined">hot_tub</span>
+                  <span className="text-xs font-bold uppercase tracking-wider">Традиции и здоровье</span>
                 </div>
-                <h3 className="text-slate-900 dark:text-white text-2xl font-bold mb-3">Сезонные дачи</h3>
-                <p className="text-slate-600 dark:text-slate-400 mb-6">Легкие, воздушные конструкции, идеальные для летнего отдыха и выходных. Экономичное строительство с большими верандами.</p>
-                <Link to="/catalog" className="text-slate-900 dark:text-white font-bold border-b-2 border-primary pb-0.5 hover:text-primary transition-colors">Смотреть модели</Link>
+                <h3 className="text-slate-900 dark:text-white text-2xl font-bold mb-3">Деревянные бани</h3>
+                <p className="text-slate-600 dark:text-slate-400 mb-6">Традиционные деревянные бани для вашего здоровья и отдыха. Различные планировки с парной, моечной и уютной комнатой отдыха.</p>
+                <Link to="/baths" className="text-slate-900 dark:text-white font-bold border-b-2 border-primary pb-0.5 hover:text-primary transition-colors">Смотреть проекты</Link>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Why Us Section */}
-        <section className="bg-white dark:bg-[#152e15] rounded-2xl p-8 md:p-12 border border-slate-100 dark:border-slate-800">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="text-slate-900 dark:text-white text-3xl font-bold mb-4">Почему выбирают Эко-Строй?</h2>
-            <p className="text-slate-600 dark:text-slate-400">Мы не просто строим дома, мы создаем экосистемы для жизни. Наша приверженность устойчивому развитию отличает нас от других.</p>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-            <div className="flex flex-col items-center text-center gap-3">
-              <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
-                <span className="material-symbols-outlined text-3xl">eco</span>
-              </div>
-              <h4 className="text-slate-900 dark:text-white font-bold text-lg">100% Экологично</h4>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Древесина из сертифицированных лесов.</p>
-            </div>
-            <div className="flex flex-col items-center text-center gap-3">
-              <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
-                <span className="material-symbols-outlined text-3xl">timer</span>
-              </div>
-              <h4 className="text-slate-900 dark:text-white font-bold text-lg">Быстрое возведение</h4>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Заезд через 3-4 месяца после утверждения.</p>
-            </div>
-            <div className="flex flex-col items-center text-center gap-3">
-              <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
-                <span className="material-symbols-outlined text-3xl">shield</span>
-              </div>
-              <h4 className="text-slate-900 dark:text-white font-bold text-lg">Гарантия 50 лет</h4>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Гарантированная целостность конструкции на десятилетия.</p>
-            </div>
-            <div className="flex flex-col items-center text-center gap-3">
-              <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
-                <span className="material-symbols-outlined text-3xl">design_services</span>
-              </div>
-              <h4 className="text-slate-900 dark:text-white font-bold text-lg">Индивидуальные проекты</h4>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Адаптируем любой проект под ваши нужды.</p>
             </div>
           </div>
         </section>
@@ -221,6 +183,44 @@ export default function Home() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Why Us Section */}
+        <section className="bg-white dark:bg-[#152e15] rounded-2xl p-8 md:p-12 border border-slate-100 dark:border-slate-800">
+          <div className="text-center max-w-3xl mx-auto mb-12">
+            <h2 className="text-slate-900 dark:text-white text-3xl font-bold mb-4">Почему выбирают Эко-Строй?</h2>
+            <p className="text-slate-600 dark:text-slate-400">Мы не просто строим дома, мы создаем экосистемы для жизни. Наша приверженность устойчивому развитию отличает нас от других.</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
+                <span className="material-symbols-outlined text-3xl">eco</span>
+              </div>
+              <h4 className="text-slate-900 dark:text-white font-bold text-lg">100% Экологично</h4>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Древесина из сертифицированных лесов.</p>
+            </div>
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
+                <span className="material-symbols-outlined text-3xl">timer</span>
+              </div>
+              <h4 className="text-slate-900 dark:text-white font-bold text-lg">Быстрое возведение</h4>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Заезд через 3-4 месяца после утверждения.</p>
+            </div>
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
+                <span className="material-symbols-outlined text-3xl">shield</span>
+              </div>
+              <h4 className="text-slate-900 dark:text-white font-bold text-lg">Гарантия 50 лет</h4>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Гарантированная целостность конструкции на десятилетия.</p>
+            </div>
+            <div className="flex flex-col items-center text-center gap-3">
+              <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
+                <span className="material-symbols-outlined text-3xl">design_services</span>
+              </div>
+              <h4 className="text-slate-900 dark:text-white font-bold text-lg">Индивидуальные проекты</h4>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Адаптируем любой проект под ваши нужды.</p>
             </div>
           </div>
         </section>
