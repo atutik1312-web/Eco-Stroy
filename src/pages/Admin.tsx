@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { collection, query, orderBy, onSnapshot, updateDoc, doc, deleteDoc } from 'firebase/firestore';
+import { collection, query, orderBy, onSnapshot, updateDoc, doc, deleteDoc, getDocs, setDoc } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import { useProjects, DEFAULT_CONFIGS } from '../context/ProjectContext';
 import { Project, PortfolioProject, BathProject } from '../types/project';
@@ -286,14 +286,29 @@ export default function Admin() {
     }
   };
 
-  const handleExportBackup = () => {
+  const handleExportBackup = async () => {
     try {
-      const dataStr = JSON.stringify(projects, null, 2);
+      showNotification('Сбор данных для бэкапа...', 'success');
+      
+      // Fetch all orders
+      const ordersSnapshot = await getDocs(collection(db, 'orders'));
+      const allOrders = ordersSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      
+      const backupData = {
+        version: '1.1',
+        timestamp: new Date().toISOString(),
+        projects,
+        portfolioProjects,
+        baths,
+        orders: allOrders
+      };
+
+      const dataStr = JSON.stringify(backupData, null, 2);
       const blob = new Blob([dataStr], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `ecostroy_projects_backup_${new Date().toISOString().split('T')[0]}.json`;
+      link.download = `ecostroy_full_backup_${new Date().toISOString().split('T')[0]}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -313,6 +328,8 @@ export default function Admin() {
     reader.onload = async (e) => {
       try {
         const importedData = JSON.parse(e.target?.result as string);
+        
+        // Handle old format (array of projects)
         if (Array.isArray(importedData)) {
           if (window.confirm(`Найдено ${importedData.length} проектов в файле. Восстановить их? (Существующие проекты с такими же ID будут перезаписаны)`)) {
             for (const proj of importedData) {
@@ -326,6 +343,53 @@ export default function Admin() {
               }
             }
             showNotification('Проекты успешно восстановлены!');
+          }
+        } 
+        // Handle new format (object with collections)
+        else if (importedData && typeof importedData === 'object' && importedData.version) {
+          const { projects: impProjects = [], portfolioProjects: impPortfolio = [], baths: impBaths = [], orders: impOrders = [] } = importedData;
+          
+          const totalItems = impProjects.length + impPortfolio.length + impBaths.length + impOrders.length;
+          
+          if (window.confirm(`Найдено данных для восстановления: ${totalItems} записей. Восстановить их? (Существующие записи с такими же ID будут перезаписаны)`)) {
+            showNotification('Восстановление данных...', 'success');
+            
+            // Restore projects
+            for (const proj of impProjects) {
+              if (proj && proj.id) {
+                const exists = projects.some(p => p.id === proj.id);
+                if (exists) updateProject(proj.id, proj);
+                else addProject(proj);
+              }
+            }
+            
+            // Restore portfolio
+            for (const proj of impPortfolio) {
+              if (proj && proj.id) {
+                const exists = portfolioProjects.some(p => p.id === proj.id);
+                if (exists) updatePortfolioProject(proj.id, proj);
+                else addPortfolioProject(proj);
+              }
+            }
+            
+            // Restore baths
+            for (const proj of impBaths) {
+              if (proj && proj.id) {
+                const exists = baths.some(p => p.id === proj.id);
+                if (exists) updateBath(proj.id, proj);
+                else addBath(proj);
+              }
+            }
+            
+            // Restore orders directly to Firestore
+            for (const order of impOrders) {
+              if (order && order.id) {
+                const { id, ...orderData } = order;
+                await setDoc(doc(db, 'orders', id), orderData);
+              }
+            }
+            
+            showNotification('Все данные успешно восстановлены!');
           }
         } else {
           showNotification('Неверный формат файла бэкапа', 'error');
