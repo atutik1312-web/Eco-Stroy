@@ -109,7 +109,7 @@ export default function Portfolio() {
             portfolioProjects.map((project, index) => (
               <section 
                 key={project.id} 
-                className={`flex flex-col ${index % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row'} gap-8 md:gap-16 items-center`}
+                className={`flex flex-col ${index % 2 === 1 ? 'md:flex-row-reverse' : 'md:flex-row'} gap-8 md:gap-16 items-start`}
               >
                 <div className="w-full md:w-3/5 shrink-0">
                   <ProjectGallery images={project.images} onOpenGallery={openGallery} />
