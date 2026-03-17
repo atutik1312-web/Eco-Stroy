@@ -15,9 +15,9 @@ export default function Footer() {
             Строим устойчивое будущее, по одному деревянному дому за раз. Качество, которому можно доверять, комфорт, который можно почувствовать.
           </p>
           <div className="flex gap-4 mt-2">
-            <a href="#" className="text-slate-400 hover:text-primary transition-colors"><span className="material-symbols-outlined">public</span></a>
-            <a href="#" className="text-slate-400 hover:text-primary transition-colors"><span className="material-symbols-outlined">alternate_email</span></a>
-            <a href="#" className="text-slate-400 hover:text-primary transition-colors"><span className="material-symbols-outlined">call</span></a>
+            <a href="https://t.me/ecostroy" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-primary transition-colors flex items-center justify-center" title="Telegram"><span className="material-symbols-outlined -rotate-45">send</span></a>
+            <a href="mailto:info@ecosrtoy.ru" className="text-slate-400 hover:text-primary transition-colors flex items-center justify-center" title="Email"><span className="material-symbols-outlined">alternate_email</span></a>
+            <a href="tel:+79000000000" className="text-slate-400 hover:text-primary transition-colors flex items-center justify-center" title="Телефон"><span className="material-symbols-outlined">call</span></a>
           </div>
         </div>
         <div className="flex flex-wrap gap-12 md:gap-24">
