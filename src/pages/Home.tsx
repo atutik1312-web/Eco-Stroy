@@ -92,9 +92,9 @@ export default function Home() {
               <Link to="/catalog" className="flex items-center justify-center rounded-lg h-14 px-8 bg-primary hover:bg-green-500 transition-colors text-slate-900 text-base font-bold">
                 Каталог проектов
               </Link>
-              <button className="flex items-center justify-center rounded-lg h-14 px-8 bg-white/10 backdrop-blur-sm hover:bg-white/20 border border-white/30 transition-colors text-white text-base font-bold">
-                Портфолио
-              </button>
+              <Link to="/portfolio" onClick={() => window.scrollTo(0, 0)} className="flex items-center justify-center rounded-lg h-14 px-8 bg-white/10 backdrop-blur-sm hover:bg-white/20 border border-white/30 transition-colors text-white text-base font-bold">
+                Наши работы
+              </Link>
             </div>
           </div>
         </section>
@@ -117,13 +117,9 @@ export default function Home() {
                 <div className="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBaoBBxNKK0pLDEpFF1hh1KwU9F2V2tsi0aG9vVEUSAjILpp0FcA2fE8WLUm2ZsOS4SmxfU4mhRoTxqQMSfjKspSEbfJcpBMNKAZibFtTdCPrV8SD0hqB91JOvW1yyIaliqtbbpoXdBiBS2z5w-qSY-SQUVZZGXtDtm3aJJZfWoKIs-f4buZ6NC--l7TNCnnbgY_q2rEpmmJT9fwx01ZLfEMZGeX_u8AwQdXVzYYqv26LueW63DYm-gMK4cfSMk-w-ZIgu2w7jqOqk')" }}></div>
               </div>
               <div className="p-8">
-                <div className="flex items-center gap-2 mb-3 text-primary">
-                  <span className="material-symbols-outlined">ac_unit</span>
-                  <span className="text-xs font-bold uppercase tracking-wider">Мощная изоляция</span>
-                </div>
-                <h3 className="text-slate-900 dark:text-white text-2xl font-bold mb-3">Для постоянного проживания</h3>
+                <h3 className="text-slate-900 dark:text-white text-2xl font-bold mb-3">Дома для постоянного проживания</h3>
                 <p className="text-slate-600 dark:text-slate-400 mb-6">Утепленные, долговечные дома, созданные для суровых зим и комфорта в любое время года. Технология двойных стен и премиальные системы отопления.</p>
-                <Link to="/catalog" className="text-slate-900 dark:text-white font-bold border-b-2 border-primary pb-0.5 hover:text-primary transition-colors">Смотреть модели</Link>
+                <Link to="/catalog" className="text-slate-900 dark:text-white font-bold border-b-2 border-primary pb-0.5 hover:text-primary transition-colors">Смотреть варианты</Link>
               </div>
             </div>
             <div className="group relative overflow-hidden rounded-xl bg-white dark:bg-[#152e15] shadow-sm hover:shadow-md transition-all border border-slate-100 dark:border-slate-800">
@@ -131,10 +127,6 @@ export default function Home() {
                 <div className="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" style={{ backgroundImage: "url('https://i.postimg.cc/7YZs7W3H/bsthhouse-13-1.jpg')" }}></div>
               </div>
               <div className="p-8">
-                <div className="flex items-center gap-2 mb-3 text-primary">
-                  <span className="material-symbols-outlined">hot_tub</span>
-                  <span className="text-xs font-bold uppercase tracking-wider">Традиции и здоровье</span>
-                </div>
                 <h3 className="text-slate-900 dark:text-white text-2xl font-bold mb-3">Деревянные бани</h3>
                 <p className="text-slate-600 dark:text-slate-400 mb-6">Традиционные деревянные бани для вашего здоровья и отдыха. Различные планировки с парной, моечной и уютной комнатой отдыха.</p>
                 <Link to="/baths" className="text-slate-900 dark:text-white font-bold border-b-2 border-primary pb-0.5 hover:text-primary transition-colors">Смотреть проекты</Link>
