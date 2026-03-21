@@ -279,7 +279,7 @@ export default function ProjectDetails() {
                 <tr className="bg-slate-50 dark:bg-slate-900">
                   <th className="p-4 font-bold text-slate-900 dark:text-white border-b border-r border-slate-200 dark:border-slate-800">Параметр</th>
                   <th className="p-4 font-bold text-slate-900 dark:text-white border-b border-r border-slate-200 dark:border-slate-800 text-center">Теплый контур</th>
-                  <th className="p-4 font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 text-center">Под ключ</th>
+                  <th className="p-4 font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-800 text-center">Теплый контур ПЛЮС</th>
                 </tr>
               </thead>
               <tbody className="bg-white dark:bg-slate-950">

@@ -1148,7 +1148,7 @@ export default function Admin() {
                   <input type="number" value={currentProject.priceWarm || currentProject.price} onChange={e => updateField('priceWarm', parseInt(e.target.value) || 0)} className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none" />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-sm font-bold text-slate-900 dark:text-white">Цена "Под ключ" (₽)</label>
+                  <label className="text-sm font-bold text-slate-900 dark:text-white">Цена "Теплый контур ПЛЮС" (₽)</label>
                   <input type="number" value={currentProject.priceTurnkey || Math.round(currentProject.price * 1.3)} onChange={e => updateField('priceTurnkey', parseInt(e.target.value) || 0)} className="h-12 px-4 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-primary outline-none" />
                 </div>
               </div>
@@ -1159,7 +1159,7 @@ export default function Admin() {
                     <tr className="bg-slate-100 dark:bg-slate-800">
                       <th className="p-4 font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700">Параметр</th>
                       <th className="p-4 font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 text-center w-32">Теплый контур</th>
-                      <th className="p-4 font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 text-center w-32">Под ключ</th>
+                      <th className="p-4 font-bold text-slate-900 dark:text-white border-b border-slate-200 dark:border-slate-700 text-center w-32">Теплый контур ПЛЮС</th>
                     </tr>
                   </thead>
                   <tbody>
