@@ -102,11 +102,11 @@ export default function Home() {
         {/* Categories Section */}
         <section className="flex flex-col gap-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div className="max-w-2xl">
-              <h2 className="text-slate-900 dark:text-white text-3xl md:text-4xl font-bold leading-tight mb-4">Выберите свой идеальный дом</h2>
+            <div className="max-w-3xl lg:max-w-4xl">
+              <h2 className="text-slate-900 dark:text-white text-3xl md:text-4xl font-bold leading-tight mb-4 lg:whitespace-nowrap">Выберите свой уютный дом или&nbsp;баню</h2>
               <p className="text-slate-600 dark:text-slate-400 text-lg">Будь то уютный летний домик или надежный семейный дом для любого сезона, у нас есть идеальное решение для вашего образа жизни.</p>
             </div>
-            <Link to="/catalog" className="text-primary hover:text-green-600 font-bold flex items-center gap-1 group">
+            <Link to="/catalog" className="text-primary hover:text-green-600 font-bold flex items-center gap-1 group whitespace-nowrap">
               Смотреть все варианты
               <span className="material-symbols-outlined transition-transform group-hover:translate-x-1">arrow_forward</span>
             </Link>
@@ -253,13 +253,27 @@ export default function Home() {
         </section>
 
         {/* CTA Section */}
-        <section className="w-full bg-primary rounded-2xl p-8 md:p-16 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl shadow-primary/20">
+        <section className="w-full bg-primary rounded-2xl p-8 md:p-16 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-10 shadow-xl shadow-primary/20">
           <div className="max-w-xl">
-            <h2 className="text-slate-900 text-3xl md:text-4xl font-black mb-4">Готовы построить дом мечты?</h2>
+            <h2 className="text-slate-900 text-3xl md:text-4xl font-black mb-4">Готовы построить дом с нами?</h2>
             <p className="text-slate-800 font-medium text-lg">Получите бесплатную консультацию и предварительную смету для вашего проекта уже сегодня.</p>
           </div>
-          <form onSubmit={handlePhoneSubmit} className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-            {isSuccess ? (
+          <div className="flex flex-col gap-6 w-full lg:w-auto">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 text-slate-900">
+              <span className="font-bold text-lg whitespace-nowrap">Позвоните нам:</span>
+              <div className="flex items-center gap-2 bg-white/20 px-4 py-2 rounded-lg">
+                <span className="material-symbols-outlined">call</span>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3">
+                  <a href="tel:+74951234567" className="font-black text-lg hover:opacity-80 transition-opacity whitespace-nowrap">+7 (495) 123-45-67</a>
+                  <span className="text-sm font-medium opacity-80 sm:border-l border-slate-900/30 sm:pl-3 whitespace-nowrap">Пн-Вс: 09:00 - 20:00</span>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex flex-col gap-3">
+              <span className="text-slate-900 font-bold text-lg">Или закажите звонок:</span>
+              <form onSubmit={handlePhoneSubmit} className="flex flex-col sm:flex-row gap-4 w-full">
+                {isSuccess ? (
               <div className="h-14 px-8 rounded-lg bg-green-600 text-white font-bold flex items-center justify-center whitespace-nowrap">
                 <span className="material-symbols-outlined mr-2">check_circle</span>
                 Заявка отправлена
@@ -305,7 +319,9 @@ export default function Home() {
                 </button>
               </>
             )}
-          </form>
+              </form>
+            </div>
+          </div>
         </section>
       </div>
     </main>
