@@ -83,10 +83,10 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10"></div>
           <div className="relative z-20 flex flex-col gap-6 max-w-2xl">
             <h1 className="text-white text-4xl md:text-4xl font-black leading-tight tracking-[-0.033em]">
-              Надежный застройщик с многолетним опытом
+              Строим каркасные дома и бани для комфортного жилья и отдыха
             </h1>
             <p className="text-slate-200 text-lg md:text-xl font-medium leading-relaxed max-w-lg">
-              Экологичные деревянные дома для многих поколений. Мы объединяем традиционное мастерство с современными технологиями.
+              Объединяем традиционное мастерство с современными технологиями
             </p>
             <div className="flex flex-col sm:flex-row gap-4 pt-4">
               <Link to="/catalog" className="flex items-center justify-center rounded-lg h-14 px-8 bg-primary hover:bg-green-500 transition-colors text-slate-900 text-base font-bold">
@@ -182,7 +182,7 @@ export default function Home() {
         {/* Why Us Section */}
         <section className="bg-white dark:bg-[#152e15] rounded-2xl p-8 md:p-12 border border-slate-100 dark:border-slate-800">
           <div className="text-center max-w-3xl mx-auto mb-12">
-            <h2 className="text-slate-900 dark:text-white text-3xl font-bold mb-4">Почему выбирают Эко-Строй?</h2>
+            <h2 className="text-slate-900 dark:text-white text-3xl font-bold mb-4">Почему выбирают нас?</h2>
             <p className="text-slate-600 dark:text-slate-400">Мы не просто строим дома, мы создаем экосистемы для жизни. Наша приверженность устойчивому развитию отличает нас от других.</p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
@@ -198,14 +198,14 @@ export default function Home() {
                 <span className="material-symbols-outlined text-3xl">timer</span>
               </div>
               <h4 className="text-slate-900 dark:text-white font-bold text-lg">Быстрое возведение</h4>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Заезд через 3-4 месяца после утверждения.</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Заезд через 3-4 месяца.</p>
             </div>
             <div className="flex flex-col items-center text-center gap-3">
               <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
                 <span className="material-symbols-outlined text-3xl">shield</span>
               </div>
-              <h4 className="text-slate-900 dark:text-white font-bold text-lg">Гарантия 50 лет</h4>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Гарантированная целостность конструкции на десятилетия.</p>
+              <h4 className="text-slate-900 dark:text-white font-bold text-lg">Гарантия 30 лет</h4>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Целостность конструкции на десятки лет.</p>
             </div>
             <div className="flex flex-col items-center text-center gap-3">
               <div className="size-16 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-2">
@@ -222,24 +222,24 @@ export default function Home() {
           <div className="space-y-8">
             <div>
               <h2 className="text-slate-900 dark:text-white text-3xl font-bold mb-4">Встречайте экспертов</h2>
-              <p className="text-slate-600 dark:text-slate-400 text-lg">Наша команда архитекторов, инженеров и строителей работает вместе, чтобы ваш дом мечты был безопасным, экологичным и красивым.</p>
+              <p className="text-slate-600 dark:text-slate-400 text-lg">Наша команда архитекторов, инженеров и строителей работает вместе, чтобы ваш дом мечты был безопасным, экологичным и уютным.</p>
             </div>
             <div className="grid grid-cols-2 gap-6">
               <div className="bg-white dark:bg-[#152e15] p-6 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-4xl font-black text-primary block mb-2">12+</span>
+                <span className="text-4xl font-black text-primary block mb-2">25+</span>
                 <span className="text-slate-700 dark:text-slate-300 font-medium">Лет опыта</span>
               </div>
               <div className="bg-white dark:bg-[#152e15] p-6 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-4xl font-black text-primary block mb-2">450+</span>
+                <span className="text-4xl font-black text-primary block mb-2">150+</span>
                 <span className="text-slate-700 dark:text-slate-300 font-medium">Построенных домов</span>
               </div>
               <div className="bg-white dark:bg-[#152e15] p-6 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-4xl font-black text-primary block mb-2">150</span>
+                <span className="text-4xl font-black text-primary block mb-2">15</span>
                 <span className="text-slate-700 dark:text-slate-300 font-medium">Мастеров</span>
               </div>
               <div className="bg-white dark:bg-[#152e15] p-6 rounded-xl border border-slate-100 dark:border-slate-800">
                 <span className="text-4xl font-black text-primary block mb-2">100%</span>
-                <span className="text-slate-700 dark:text-slate-300 font-medium">Удовлетворенность</span>
+                <span className="text-slate-700 dark:text-slate-300 font-medium">Контроль качества</span>
               </div>
             </div>
           </div>
