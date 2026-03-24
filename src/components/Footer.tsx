@@ -12,7 +12,7 @@ export default function Footer() {
             <span className="text-lg font-bold">Эко-Строй</span>
           </div>
           <p className="text-sm text-slate-500 dark:text-slate-400">
-            Строим устойчивое будущее, по одному деревянному дому за раз. Качество, которому можно доверять, комфорт, который можно почувствовать.
+            Строим деревянные дома и бани по каркасной технологии. Качество, которому можно доверять.
           </p>
           <div className="flex gap-4 mt-2">
             <a href="https://t.me/ecostroy" target="_blank" rel="noopener noreferrer" className="text-slate-400 hover:text-primary transition-colors flex items-center justify-center" title="Telegram"><span className="material-symbols-outlined -rotate-45">send</span></a>
