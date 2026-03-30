@@ -51,7 +51,6 @@ export default function Header() {
             <Link to="/technologies" onClick={handleLinkClick} className={`${isActive('/technologies')} transition-colors text-base font-medium`}>Технологии</Link>
             <Link to="/about" onClick={handleLinkClick} className={`${isActive('/about')} transition-colors text-base font-medium`}>О нас</Link>
             <Link to="/contacts" onClick={handleLinkClick} className={`${isActive('/contacts')} transition-colors text-base font-medium`}>Контакты</Link>
-            <Link to="/admin" onClick={handleLinkClick} className={`${isActive('/admin')} transition-colors text-base font-medium text-slate-400`}>Админка</Link>
           </nav>
         </div>
       )}

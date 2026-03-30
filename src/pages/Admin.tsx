@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, orderBy, onSnapshot, updateDoc, doc, deleteDoc, getDocs, setDoc } from 'firebase/firestore';
-import { db } from '../lib/firebase';
+import { signOut } from 'firebase/auth';
+import { db, auth } from '../lib/firebase';
 import { useProjects, DEFAULT_CONFIGS } from '../context/ProjectContext';
 import { Project, PortfolioProject, BathProject } from '../types/project';
 import { Order } from '../types/order';
+import { useNavigate } from 'react-router-dom';
 
 export default function Admin() {
+  const navigate = useNavigate();
   const { projects, portfolioProjects, baths, loading, addProject, updateProject, deleteProject, addPortfolioProject, updatePortfolioProject, deletePortfolioProject, addBath, updateBath, deleteBath } = useProjects();
   const [view, setView] = useState<'list' | 'edit' | 'edit_portfolio' | 'edit_bath'>('list');
   const [adminTab, setAdminTab] = useState<'projects' | 'portfolio' | 'baths' | 'orders'>('projects');
@@ -403,6 +406,16 @@ export default function Admin() {
     event.target.value = ''; // Reset input
   };
 
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+      showNotification('Ошибка при выходе', 'error');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -416,7 +429,17 @@ export default function Admin() {
       <div className="p-4 md:p-10 max-w-7xl mx-auto min-h-screen">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Панель управления</h1>
+            <div className="flex items-center gap-4 mb-2">
+              <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Панель управления</h1>
+              <button 
+                onClick={handleLogout}
+                className="p-2 text-slate-500 hover:text-red-500 transition-colors flex items-center gap-1 text-sm font-medium"
+                title="Выйти"
+              >
+                <span className="material-symbols-outlined text-lg">logout</span>
+                <span className="hidden sm:inline">Выйти</span>
+              </button>
+            </div>
             <div className="flex gap-4 border-b border-slate-200 dark:border-slate-800">
               <button 
                 onClick={() => setAdminTab('projects')}

@@ -13,6 +13,8 @@ import Contacts from './pages/Contacts';
 import ProjectDetails from './pages/ProjectDetails';
 import BathDetails from './pages/BathDetails';
 import Admin from './pages/Admin';
+import Login from './pages/Login';
+import ProtectedRoute from './components/ProtectedRoute';
 
 export default function App() {
   return (
@@ -31,7 +33,12 @@ export default function App() {
             <Route path="/technologies" element={<Technologies />} />
             <Route path="/about" element={<About />} />
             <Route path="/contacts" element={<Contacts />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/admin" element={
+              <ProtectedRoute>
+                <Admin />
+              </ProtectedRoute>
+            } />
           </Routes>
           <Footer />
         </div>
