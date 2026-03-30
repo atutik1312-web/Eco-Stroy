@@ -18,6 +18,13 @@ The `Admin.tsx` page is a full-fledged SPA (Single Page Application) admin panel
     - For working with requests (`orders`), the admin panel makes direct queries to the database using methods like `query`, `orderBy`, `onSnapshot` (to get the list of requests in real-time), and `updateDoc`, `deleteDoc` (to change status or delete requests).
     - **Import/Export (Backup)** functionality is implemented: `getDocs` and `setDoc` methods are used to export the entire database to a JSON file and restore from it.
 
+### 1.3. Authentication & Security
+
+- **Firebase Authentication:** The admin panel is protected against unauthorized access.
+    - **Google OAuth:** Authentication is performed via Google accounts (`signInWithPopup`).
+    - **Protected Route (`ProtectedRoute.tsx`):** The `/admin` route is wrapped in a higher-order component that checks the current user state (`onAuthStateChanged`). If a user is not authenticated, they are automatically redirected to the `/login` page.
+    - **Session Management:** The admin panel includes a "Sign Out" button that calls Firebase's `signOut` method and terminates the session.
+
 ---
 
 ## 2. Functionality by Page Sections

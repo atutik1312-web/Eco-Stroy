@@ -18,10 +18,13 @@ The "Eco-Stroy" application is built as a **Single Page Application (SPA)** util
 * **yet-another-react-lightbox:** A robust library used for fullscreen image galleries and floor plan viewing. It is integrated with the `Zoom` plugin to allow detailed inspection of architectural blueprints.
 * **Icons:** A hybrid approach using **Material Symbols Outlined** (via Google Fonts CDN) for general UI elements and **lucide-react** for specific component icons.
 
-## 4. Data Management & State
+## 4. Data Management, State & Security
 * **Firebase Firestore (v12):** A NoSQL cloud database used as the primary data store.
   * *Real-time Sync:* Utilizes `onSnapshot` listeners to push database updates to connected clients instantly.
   * *Collections:* `projects`, `baths`, `portfolio`, `orders`.
+* **Firebase Authentication:** Used to secure the admin dashboard.
+  * *Google Login:* Implemented via `signInWithPopup` and `GoogleAuthProvider`.
+  * *Protected Routes:* The `/admin` route is wrapped in a `ProtectedRoute` component that listens to `onAuthStateChanged` and redirects unauthenticated users to the `/login` page.
 * **React Context API (`ProjectContext.tsx`):** Acts as the global state manager. It abstracts Firebase interactions away from UI components.
   * The `ProjectProvider` fetches data on mount and distributes it via the `useProjects()` custom hook.
   * It exposes asynchronous CRUD functions (`addProject`, `updateProject`, `deleteProject`) used primarily by the Admin panel.
