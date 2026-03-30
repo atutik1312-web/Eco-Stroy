@@ -19,7 +19,8 @@ eco-stroy-app/
     │
     ├── components/          # Reusable UI components (Shared UI)
     │   ├── Header.tsx       # Navigation, branding, and primary contact information
-    │   └── Footer.tsx       # Copyright, legal links, and secondary navigation
+    │   ├── Footer.tsx       # Copyright, legal links, and secondary navigation
+    │   └── ProtectedRoute.tsx # Higher-order component for route authentication
     │
     ├── context/             # Global State Management
     │   └── ProjectContext.tsx # Data Provider: Fetches Firebase data and distributes it to the tree
@@ -44,6 +45,7 @@ eco-stroy-app/
         ├── About.tsx        # Corporate history, statistics, and team profiles
         ├── Technologies.tsx # Technical documentation on construction methodologies
         ├── Contacts.tsx     # Physical locations, interactive maps, and feedback forms
+        ├── Login.tsx        # Authentication page for admin access
         └── Admin.tsx        # Internal CMS (CRUD operations) and CRM for lead management
 ```
 
@@ -64,7 +66,8 @@ The following table maps the application's URL paths to their corresponding Reac
 |`/technologies`|`<Technologies />`|Information regarding construction standards|
 |`/about`|`<About />`|Organizational background and company details|
 |`/contacts`|`<Contacts />`|Communication channels and feedback mechanisms|
-|`/admin`|`<Admin />`|Secure content management and CRM dashboard|
+|`/login`|`<Login />`|Authentication page for admin access|
+|`/admin`|`<Admin />`|Secure content management and CRM dashboard (Protected)|
 
 ### 3. Architectural Data Flow
 
