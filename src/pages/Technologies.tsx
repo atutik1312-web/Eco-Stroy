@@ -10,8 +10,13 @@ export default function Technologies() {
 
         {/* Core Tech */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-          <div className="relative aspect-[4/3] rounded-2xl overflow-hidden">
-            <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCu3iD9jnxtlA2BayjCEXlrodAElzcdKVd848YkMnIJb0-WHJhWnMNKBZd-b_7em3v1NbdQqCZSTomwBRWOZkifllgormwskqizIfzRIY2aCQRZfgenullAKzY5DpMhu5-kr55JZ8dSD3kqhhY31YEuwJOhJHsI2XqbL5_Fd6-UTjXhN5eXnPwPgQhsZwyBDiwW8tQFPwPlbekcXxARvIaPvXl2dlkWSNqr9EcnacDAnrf70xk7og6t8-SscduRBlHqUdL2cdXOppc')" }}></div>
+          <div className="relative rounded-2xl overflow-hidden order-first lg:order-last flex justify-center">
+            <img 
+              src="https://i.postimg.cc/xdX7VJ5M/sendwich_7_copy.jpg" 
+              alt="Схема каркасной стены" 
+              className="w-full max-w-md lg:max-w-lg h-auto object-contain rounded-2xl"
+              referrerPolicy="no-referrer"
+            />
           </div>
           <div className="flex flex-col gap-6">
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Каркасная технология</h2>
