@@ -14,22 +14,39 @@ export default function Technologies() {
             <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCu3iD9jnxtlA2BayjCEXlrodAElzcdKVd848YkMnIJb0-WHJhWnMNKBZd-b_7em3v1NbdQqCZSTomwBRWOZkifllgormwskqizIfzRIY2aCQRZfgenullAKzY5DpMhu5-kr55JZ8dSD3kqhhY31YEuwJOhJHsI2XqbL5_Fd6-UTjXhN5eXnPwPgQhsZwyBDiwW8tQFPwPlbekcXxARvIaPvXl2dlkWSNqr9EcnacDAnrf70xk7og6t8-SscduRBlHqUdL2cdXOppc')" }}></div>
           </div>
           <div className="flex flex-col gap-6">
-            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Двойной объемный каркас</h2>
+            <h2 className="text-3xl font-bold text-slate-900 dark:text-white">Каркасная технология</h2>
             <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-              Наша фирменная технология обеспечивает максимальную энергоэффективность. Перекрестное утепление исключает мостики холода, снижая затраты на отопление до 40% по сравнению со стандартными решениями.
+              Каркасное домостроение — это современный способ возведения загородных домов, при котором основой конструкции служит прочный деревянный каркас. Пространство между элементами каркаса заполняется утеплителем, а конструкция обшивается листовыми материалами с применением защитных мембран. В результате такого подхода дом получается лёгким, энергоэффективным и долговечным.
             </p>
-            <ul className="flex flex-col gap-4 mt-2">
+            <h3 className="text-xl font-semibold text-slate-900 dark:text-white mt-2">Ключевые преимущества каркасной технологии:</h3>
+            <ul className="flex flex-col gap-4">
               <li className="flex items-start gap-3">
                 <span className="material-symbols-outlined text-primary mt-0.5">check_circle</span>
-                <span className="text-slate-700 dark:text-slate-300">Использование сухой строганой древесины камерной сушки.</span>
+                <span className="text-slate-700 dark:text-slate-300">Сокращённые сроки строительства за счёт сборно-разборной конструкции.</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="material-symbols-outlined text-primary mt-0.5">check_circle</span>
-                <span className="text-slate-700 dark:text-slate-300">Экологичный базальтовый утеплитель высокой плотности.</span>
+                <span className="text-slate-700 dark:text-slate-300">Высокая энергоэффективность - многослойный утеплённый контур снижает теплопотери и затраты на отопление.</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="material-symbols-outlined text-primary mt-0.5">check_circle</span>
-                <span className="text-slate-700 dark:text-slate-300">Интеллектуальные мембраны для правильного парообмена.</span>
+                <span className="text-slate-700 dark:text-slate-300">Минимальная усадка — к отделке можно приступать сразу после монтажа каркаса.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+                <span className="text-slate-700 dark:text-slate-300">Независимость от сезона — работы ведутся при любой температуре, без «мокрых» процессов.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+                <span className="text-slate-700 dark:text-slate-300">Лёгкость конструкции дает снижение нагрузки на основание — не требует массивного фундамента.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+                <span className="text-slate-700 dark:text-slate-300">Предсказуемая смета — точный расчёт материалов на этапе проектирования.</span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="material-symbols-outlined text-primary mt-0.5">check_circle</span>
+                <span className="text-slate-700 dark:text-slate-300">Экологичность и комфорт — натуральные материалы и правильный парообмен создают здоровый микроклимат.</span>
               </li>
             </ul>
           </div>
