@@ -89,7 +89,7 @@ export default function Portfolio() {
         <div className="flex flex-col gap-4 text-center md:text-left">
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-slate-900 dark:text-white">Наше портфолио</h1>
           <p className="text-lg text-slate-500 dark:text-slate-400 max-w-2xl">
-            Мы гордимся каждым построенным домом. Посмотрите на наши реализованные проекты, чтобы оценить качество материалов, внимание к деталям и внешний вид домов в реальных условиях.
+          Знакомьтесь с примерами наших работ — реализованными проектами загородных домов и бань. Оцените продуманные решения и мастерство наших строителей.  
           </p>
         </div>
 

@@ -54,7 +54,8 @@ export default function CatalogBaths() {
       <div className="w-full max-w-7xl flex flex-col gap-8">
         <div className="flex flex-col gap-2">
           <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white">Проекты бань</h1>
-          <p className="text-slate-500 dark:text-slate-400 max-w-2xl">Изучите наш каталог экологически чистых деревянных бань. Используйте фильтры, чтобы найти свой идеальный вариант.</p>
+          <p className="text-slate-500 dark:text-slate-400 max-w-2xl">В этом каталоге вы можете подобрать себе деревянную баню под ключ, с доставкой и монтажом на вашем участке.
+</p>
         </div>
         
         {/* Filters */}
