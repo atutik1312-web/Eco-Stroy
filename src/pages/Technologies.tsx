@@ -144,7 +144,7 @@ export default function Technologies() {
         <section className="bg-white dark:bg-slate-900 rounded-2xl p-8 md:p-12 border border-slate-100 dark:border-slate-800">
           <div className="text-center mb-10">
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">Инженерные коммуникации</h2>
-            <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">Мы предлагаем комплексное оснащение дома всеми необходимыми системами для комфортного проживания.</p>
+            <p className="text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">В виде дополнитльной услуги мы предлагаем комплексное оснащение дома всеми необходимыми инженерными системами. Они включают в себя:</p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             <div className="flex flex-col gap-3 p-6 rounded-xl bg-slate-50 dark:bg-slate-800/50">
