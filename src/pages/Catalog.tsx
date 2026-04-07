@@ -56,7 +56,7 @@ export default function Catalog() {
       <div className="w-full max-w-7xl flex flex-col gap-8">
         <div className="flex flex-col gap-2">
           <h1 className="text-4xl font-bold tracking-tight text-slate-900 dark:text-white">Наши проекты</h1>
-          <p className="text-slate-500 dark:text-slate-400 max-w-2xl">Изучите наш каталог экологически чистых деревянных домов, созданных для современной жизни. Используйте фильтры, чтобы найти свой идеальный дом.</p>
+          <p className="text-slate-500 dark:text-slate-400 max-w-2xl">В нашем каталоге проектов вы можете подобрать себе дом, подходящий как для постоянного проживания, так и для сезонного отдыха.</p>
         </div>
         
         {/* Filters */}
