@@ -39,7 +39,12 @@ export default function ProjectDetails() {
   // All images for the gallery
   const allImages = [project.image, ...(project.gallery || [])]
     .filter(Boolean)
-    .filter((img, index, self) => self.indexOf(img) === index);
+    .map(img => img.trim())
+    .filter((img, index, self) => {
+      const normalize = (url: string) => url.replace(/^https?:\/\//, '').replace(/\/$/, '').toLowerCase();
+      const normalizedImg = normalize(img);
+      return self.findIndex(i => normalize(i) === normalizedImg) === index;
+    });
 
   const numFloors = parseInt(project.floors) || 1;
   const floorPlans = (project.floorPlans || []).filter(Boolean);

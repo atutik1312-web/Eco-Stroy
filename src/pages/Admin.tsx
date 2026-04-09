@@ -62,6 +62,9 @@ export default function Admin() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
     const projectCopy = JSON.parse(JSON.stringify(project));
     if (!projectCopy.gallery) projectCopy.gallery = Array(5).fill('');
+    if (projectCopy.image && !projectCopy.gallery[0]) {
+      projectCopy.gallery[0] = projectCopy.image;
+    }
     if (!projectCopy.floorPlans) projectCopy.floorPlans = Array(parseInt(projectCopy.floors) || 1).fill('');
     if (!projectCopy.configurations) projectCopy.configurations = JSON.parse(JSON.stringify(DEFAULT_CONFIGS));
     setCurrentProject(projectCopy);
@@ -240,7 +243,13 @@ export default function Admin() {
     if (!currentProject) return;
     const newGallery = [...(currentProject.gallery || Array(5).fill(''))];
     newGallery[index] = value;
-    setCurrentProject({ ...currentProject, gallery: newGallery });
+    
+    const updates: Partial<Project> = { gallery: newGallery };
+    if (index === 0) {
+      updates.image = value;
+    }
+    
+    setCurrentProject({ ...currentProject, ...updates });
   };
 
   const updateFloorPlan = (index: number, value: string) => {

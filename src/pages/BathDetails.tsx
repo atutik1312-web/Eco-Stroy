@@ -37,7 +37,12 @@ export default function BathDetails() {
   // All images for the gallery
   const allImages = [bath.image, ...(bath.gallery || [])]
     .filter(Boolean)
-    .filter((img, index, self) => self.indexOf(img) === index);
+    .map(img => img.trim())
+    .filter((img, index, self) => {
+      const normalize = (url: string) => url.replace(/^https?:\/\//, '').replace(/\/$/, '').toLowerCase();
+      const normalizedImg = normalize(img);
+      return self.findIndex(i => normalize(i) === normalizedImg) === index;
+    });
 
   const openGallery = (images: string[], index: number) => {
     setGalleryImages(images);
