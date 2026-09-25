@@ -49,10 +49,10 @@ export default function About() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {[
-              { name: 'Александр Иванов', role: 'Главный архитектор', img: 'https://i.postimg.cc/Nfy1yYbb/architector.png' },
-              { name: 'Елена Смирнова', role: 'Руководитель проектов', img: 'https://i.postimg.cc/RV3c39GT/Project_manager.jpg' },
-              { name: 'Михаил Волков', role: 'Главный инженер', img: 'https://i.postimg.cc/gkwvwd4D/main_enginer1.jpg' },
-              { name: 'Дмитрий Соколов', role: 'Прораб', img: 'https://i.postimg.cc/PrLmLhKQ/prorab.jpg' },
+              { name: 'Александр Иванов', role: 'Главный архитектор', img: 'https://eckostroy.ru/media/team/architector.png' },
+              { name: 'Елена Смирнова', role: 'Руководитель проектов', img: 'https://eckostroy.ru/media/team/Project_manager.jpg' },
+              { name: 'Михаил Волков', role: 'Главный инженер', img: 'https://eckostroy.ru/media/team/main_enginer1.jpg' },
+              { name: 'Дмитрий Соколов', role: 'Прораб', img: 'https://eckostroy.ru/media/team/prorab.jpg' },
             ].map((member, i) => (
               <div key={i} className="flex flex-col gap-4 group">
                 <div className="aspect-[3/4] rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800">
