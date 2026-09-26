@@ -12,7 +12,7 @@ export default function Technologies() {
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
           <div className="relative rounded-2xl overflow-hidden order-first lg:order-last flex justify-center">
             <img 
-              src="https://i.postimg.cc/xdX7VJ5M/sendwich_7_copy.jpg" 
+              src="https://eckostroy.ru/media/others/sendwich-1.jpg" 
               alt="Схема каркасной стены" 
               className="w-full max-w-md lg:max-w-lg h-auto object-contain rounded-2xl"
               referrerPolicy="no-referrer"
@@ -126,13 +126,13 @@ export default function Technologies() {
           
           <div className="flex flex-col gap-6 lg:sticky lg:top-24">
             <img 
-              src="https://i.postimg.cc/SQCBYFcd/sendwich_4.jpg" 
+              src="https://eckostroy.ru/media/others/sendwich-2.jpg" 
               alt="Процесс строительства" 
               className="w-full h-auto rounded-2xl shadow-sm object-cover"
               referrerPolicy="no-referrer"
             />
             <img 
-              src="https://i.postimg.cc/VNJTPrgq/fasad_1.png" 
+              src="https://eckostroy.ru/media/others/fasad-1.jpg" 
               alt="Готовый фасад" 
               className="w-full h-auto rounded-2xl shadow-sm object-cover"
               referrerPolicy="no-referrer"

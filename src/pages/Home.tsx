@@ -79,7 +79,7 @@ export default function Home() {
       <div className="w-full max-w-7xl px-4 md:px-10 py-6 md:py-10 space-y-16">
         {/* Hero Section */}
         <section className="w-full rounded-2xl overflow-hidden relative min-h-[560px] flex items-end p-8 md:p-16">
-          <div className="absolute inset-0 bg-cover bg-center z-0" style={{ backgroundImage: "url('https://i.postimg.cc/PXQg3VqF/hero-bg-2.jpg')" }}></div>
+          <div className="absolute inset-0 bg-cover bg-center z-0" style={{ backgroundImage: "url('https://eckostroy.ru/media/others/hero-bg.jpg')" }}></div>
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10"></div>
           <div className="relative z-20 flex flex-col gap-6 max-w-2xl">
             <h1 className="text-white text-4xl md:text-4xl font-black leading-tight tracking-[-0.033em]">
@@ -114,7 +114,7 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="group relative overflow-hidden rounded-xl bg-white dark:bg-[#152e15] shadow-sm hover:shadow-md transition-all border border-slate-100 dark:border-slate-800">
               <div className="aspect-[16/9] w-full overflow-hidden">
-                <div className="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuBaoBBxNKK0pLDEpFF1hh1KwU9F2V2tsi0aG9vVEUSAjILpp0FcA2fE8WLUm2ZsOS4SmxfU4mhRoTxqQMSfjKspSEbfJcpBMNKAZibFtTdCPrV8SD0hqB91JOvW1yyIaliqtbbpoXdBiBS2z5w-qSY-SQUVZZGXtDtm3aJJZfWoKIs-f4buZ6NC--l7TNCnnbgY_q2rEpmmJT9fwx01ZLfEMZGeX_u8AwQdXVzYYqv26LueW63DYm-gMK4cfSMk-w-ZIgu2w7jqOqk')" }}></div>
+                <div className="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" style={{ backgroundImage: "url('https://eckostroy.ru/media/others/home-houses.jpg')" }}></div>
               </div>
               <div className="p-8">
                 <h3 className="text-slate-900 dark:text-white text-2xl font-bold mb-3">Дома для постоянного проживания</h3>
@@ -124,7 +124,7 @@ export default function Home() {
             </div>
             <div className="group relative overflow-hidden rounded-xl bg-white dark:bg-[#152e15] shadow-sm hover:shadow-md transition-all border border-slate-100 dark:border-slate-800">
               <div className="aspect-[16/9] w-full overflow-hidden">
-                <div className="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" style={{ backgroundImage: "url('https://i.postimg.cc/7YZs7W3H/bsthhouse-13-1.jpg')" }}></div>
+                <div className="h-full w-full bg-cover bg-center transition-transform duration-500 group-hover:scale-105" style={{ backgroundImage: "url('https://eckostroy.ru/media/others/home-baths.jpg')" }}></div>
               </div>
               <div className="p-8">
                 <h3 className="text-slate-900 dark:text-white text-2xl font-bold mb-3">Деревянные бани</h3>
@@ -244,8 +244,8 @@ export default function Home() {
             </div>
           </div>
           <div className="relative h-[500px] w-full bg-slate-200 dark:bg-slate-800 rounded-2xl overflow-hidden">
-            <div className="absolute top-0 right-0 w-3/4 h-3/4 bg-cover bg-center rounded-bl-2xl z-10 border-4 border-background-light dark:border-background-dark" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCu3iD9jnxtlA2BayjCEXlrodAElzcdKVd848YkMnIJb0-WHJhWnMNKBZd-b_7em3v1NbdQqCZSTomwBRWOZkifllgormwskqizIfzRIY2aCQRZfgenullAKzY5DpMhu5-kr55JZ8dSD3kqhhY31YEuwJOhJHsI2XqbL5_Fd6-UTjXhN5eXnPwPgQhsZwyBDiwW8tQFPwPlbekcXxARvIaPvXl2dlkWSNqr9EcnacDAnrf70xk7og6t8-SscduRBlHqUdL2cdXOppc')" }}></div>
-            <div className="absolute bottom-0 left-0 w-2/3 h-2/3 bg-cover bg-center rounded-tr-2xl z-20 border-4 border-background-light dark:border-background-dark" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCrLoomLiFYfie5kZhIt6tiMNMGcYNVDv__d_bKj-3AvhKdsFpirKxNI1_uBprUSzWWC2Hc2d_9d3NZlm284RPMUQs9O4tIeoh-4iI51ZCG4mcOSQEPA_XtMVNgJrCChI1kKDIuaIIwqpnnTBErFjrtk5A8hDexSJFYPwXu0R4TVnhGTX_FCLPpyYy7fgcuOOEvD4_a8aPekg0skoarbe3YxbRY0eMJd73CkYLxNNlnBVSL6kLBwS5vv0UKbdkJDvCy393FVvROWHQ')" }}></div>
+            <div className="absolute top-0 right-0 w-3/4 h-3/4 bg-cover bg-center rounded-bl-2xl z-10 border-4 border-background-light dark:border-background-dark" style={{ backgroundImage: "url('https://eckostroy.ru/media/others/experts-1.jpg')" }}></div>
+            <div className="absolute bottom-0 left-0 w-2/3 h-2/3 bg-cover bg-center rounded-tr-2xl z-20 border-4 border-background-light dark:border-background-dark" style={{ backgroundImage: "url('https://eckostroy.ru/media/others/experts-2.jpg')" }}></div>
             <div className="absolute top-6 left-6 z-0">
               <div className="size-32 rounded-full border-2 border-dashed border-primary/30 animate-spin-slow"></div>
             </div>

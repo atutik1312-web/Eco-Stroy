@@ -16,7 +16,7 @@ export default function About() {
           </div>
           <div className="flex-1 w-full">
             <div className="aspect-[4/3] rounded-2xl overflow-hidden shadow-lg">
-              <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: "url('https://lh3.googleusercontent.com/aida-public/AB6AXuCrLoomLiFYfie5kZhIt6tiMNMGcYNVDv__d_bKj-3AvhKdsFpirKxNI1_uBprUSzWWC2Hc2d_9d3NZlm284RPMUQs9O4tIeoh-4iI51ZCG4mcOSQEPA_XtMVNgJrCChI1kKDIuaIIwqpnnTBErFjrtk5A8hDexSJFYPwXu0R4TVnhGTX_FCLPpyYy7fgcuOOEvD4_a8aPekg0skoarbe3YxbRY0eMJd73CkYLxNNlnBVSL6kLBwS5vv0UKbdkJDvCy393FVvROWHQ')" }}></div>
+              <div className="w-full h-full bg-cover bg-center" style={{ backgroundImage: "url('https://eckostroy.ru/media/others/experts-2.jpg')" }}></div>
             </div>
           </div>
         </section>
